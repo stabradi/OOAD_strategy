@@ -1,0 +1,11 @@
+X Create a game
+X Move before initialization -> Exception
+X startGame() does not throw exception
+X make valid move -> RED_WINS
+X make invalid move, wrong piece
+X make invalid move, bad x-coordinate in from
+X make invalid move, bad y-coordinate in from
+X make invalid move, bad x-coordinate in to
+X make invlaid move, bad y-coordinate in to
+X make second move before re-initializing -> Exception
+X Play two games in a row
