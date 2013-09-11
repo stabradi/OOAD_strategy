@@ -1,0 +1,7 @@
+Create a beta strategy game
+Initialize the board
+Make valid move, no combat -> MoveResult
+Combat ??
+Make valid move with combat -> MoveResult
+Flag captured -> end game with appropriate winner
+After sixth move -> draw
