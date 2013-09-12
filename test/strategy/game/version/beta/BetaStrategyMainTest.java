@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -216,5 +217,17 @@ public class BetaStrategyMainTest {
 		assertEquals(21, game.calculateDistance(loc_neg5_neg6,loc_10_0));
 	}
 	
-	// TODO valid move, but game over
+	// TODO Refactor this test once game ends are actually implemented
+	// valid move, but game over
+	@Test(expected = StrategyException.class)
+	public void testValidMoveButGameOver() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException, StrategyException{
+		Class<BetaStrategyGameController> gameController = (Class<BetaStrategyGameController>) Class.forName("strategy.game.version.beta.BetaStrategyGameController");
+		
+        BetaStrategyGameController game = new BetaStrategyGameController(null, null);
+        Field instance = gameController.getDeclaredField("gameOver");
+        instance.setAccessible(true);
+        instance.set(game, true); 
+        
+        game.move(PieceType.SPY, new Location2D(0,0), new Location2D(0,1));
+	}
 }

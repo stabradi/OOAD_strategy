@@ -14,7 +14,6 @@ import java.util.Collection;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
-import strategy.common.StrategyRuntimeException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
@@ -74,11 +73,8 @@ public class BetaStrategyGameController implements StrategyGameController {
 		if(currentTurn == PlayerColor.BLUE){
 			playerConfiguration = blueConfiguration;
 		}
-		else if(currentTurn == PlayerColor.RED){
-			playerConfiguration = redConfiguration;
-		}
 		else{
-			throw new StrategyRuntimeException("Could not make move because the current player turn could not be determined, or was an in an invalid state.");
+			playerConfiguration = redConfiguration;
 		}
 		
 		// Remove old PieceLocationDescriptor (for from) and add new one (for to)
@@ -101,14 +97,11 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * Returns the new turn
 	 */
 	private PlayerColor nextTurn(){
-		if(currentTurn == PlayerColor.BLUE){
-			currentTurn = PlayerColor.RED;
-		}
-		else if(currentTurn == PlayerColor.RED){
+		if(currentTurn == PlayerColor.RED){
 			currentTurn = PlayerColor.BLUE;
 		}
 		else{
-			throw new StrategyRuntimeException("Could not switch player turns. Unexpected current turn. Game may have not have been started, or game has finished.");
+			currentTurn = PlayerColor.RED;
 		}
 		return currentTurn;
 	}
