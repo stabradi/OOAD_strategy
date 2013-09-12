@@ -1,3 +1,4 @@
+
 package strategy.game.version.beta;
 
 public enum StrikeResultBeta {

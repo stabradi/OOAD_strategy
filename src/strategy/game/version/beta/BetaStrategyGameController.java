@@ -48,18 +48,20 @@ public class BetaStrategyGameController implements StrategyGameController {
 	}
 	@Override
 	public void startGame() throws StrategyException {
-		if(!(checkPiecesOnSide(PlayerColor.RED,redConfiguration)&&checkPiecesOnSide(PlayerColor.BLUE,blueConfiguration))){
-			throw new StrategyException("pieces not in valid positions");
-		}
-		if(!(checkNumberOfPieces(redConfiguration)==0 || checkNumberOfPieces(blueConfiguration)==0)){
-			throw new StrategyException("incorrect number of pieces"+checkNumberOfPieces(redConfiguration)+"|"+checkNumberOfPieces(blueConfiguration));
-		}
+		checkNumberOfPieces(redConfiguration,blueConfiguration);
+		checkPiecesOnSide(redConfiguration,blueConfiguration);
+		
 		currentTurn = PlayerColor.RED;
 		gameOver = false;
 		gameStarted = true;
 
 	}
-	private int checkNumberOfPieces(Collection<PieceLocationDescriptor> config){
+	protected void checkNumberOfPieces(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
+		if(!(checkNumberOfPieces(config1)==0 || checkNumberOfPieces(config2)==0)){
+			throw new StrategyException("incorrect number of pieces"+checkNumberOfPieces(config1)+"|"+checkNumberOfPieces(config2));
+		}
+	}
+	protected int checkNumberOfPieces(Collection<PieceLocationDescriptor> config){
 		int flag = 1;
 		int marshal = 1;
 		int colonels = 2;
@@ -86,7 +88,14 @@ public class BetaStrategyGameController implements StrategyGameController {
 		}
 		return (flag+marshal+colonels+captains+lieutanants+sergeant);//==0;
 	}
-	private boolean checkPiecesOnSide(PlayerColor color,Collection<PieceLocationDescriptor> config){
+	
+	protected void checkPiecesOnSide(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
+		if(!(checkPiecesOnSide(PlayerColor.RED,config1)&&checkPiecesOnSide(PlayerColor.BLUE,config2))){
+			throw new StrategyException("pieces not in valid positions");
+		}
+	}
+	
+	protected boolean checkPiecesOnSide(PlayerColor color,Collection<PieceLocationDescriptor> config){
 		int x;
 		int y;
 		if(config==null)return false;
@@ -157,7 +166,40 @@ public class BetaStrategyGameController implements StrategyGameController {
 	}
 	
 	protected StrikeResultBeta combatResult(PieceType attacker, PieceType defender){
-		return null;
+		if(attacker!=PieceType.MINER && defender==PieceType.BOMB) return StrikeResultBeta.ATTACKER_LOSES;
+		if(attacker==PieceType.SPY && defender==PieceType.MARSHAL) return StrikeResultBeta.ATTACKER_WINS;
+		if(rank(attacker)==rank(defender)) return StrikeResultBeta.DRAW;
+		if(rank(attacker)>rank(defender)) return StrikeResultBeta.ATTACKER_WINS;
+		
+		return StrikeResultBeta.ATTACKER_LOSES;
+	}
+	private int rank(PieceType piece){
+		if(piece==PieceType.MARSHAL){
+			return 12;
+		}else if(piece==PieceType.GENERAL){
+			return 11;
+		}else if(piece==PieceType.COLONEL){
+			return 10;
+		}else if(piece==PieceType.MAJOR){
+			return 9;
+		}else if(piece==PieceType.CAPTAIN){
+			return 8;
+		}else if(piece==PieceType.LIEUTENANT){
+			return 7;
+		}else if(piece==PieceType.SERGEANT){
+			return 6;
+		}else if(piece==PieceType.MINER){
+			return 5;
+		}else if(piece==PieceType.SCOUT){
+			return 4;
+		}else if(piece==PieceType.SPY){
+			return 3;
+		}else if(piece==PieceType.BOMB){
+			return 2;
+		}else if(piece==PieceType.FLAG){
+			return 1;
+		} 
+		return 0;
 	}
 	
 	/*
