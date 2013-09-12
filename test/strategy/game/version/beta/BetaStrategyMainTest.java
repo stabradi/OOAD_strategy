@@ -573,4 +573,9 @@ public class BetaStrategyMainTest {
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,game.combatResult(PieceType.MARSHAL,PieceType.FLAG));
 		
 	}
+	
+	@Test
+	public void testAreEnumsStupidBecauseTheyRequireThisCallToBeMadeForCodeCoverage(){
+		assertEquals(StrikeResultBeta.ATTACKER_WINS,StrikeResultBeta.valueOf("ATTACKER_WINS"));
+	}
 }
