@@ -73,22 +73,18 @@ public class BetaStrategyMainTest {
 		return config;
 	}
 
-	@Test
-	public void testMakeBetaStrategyGame() throws StrategyException{
-		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
-		stratGameFactory.makeBetaStrategyGame(null, null);
-	}
 
 	@Test
-	public void testGetPieceAtLocation() throws StrategyException{
+	public void testGetPieceAtLocationGameNotStarted() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
 		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SPY, PlayerColor.BLUE), new Location2D(0,0)));
 
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
 
-		assertEquals(blue.get(0).getPiece(), game.getPieceAt(new Location2D(0,0)));
+		assertNull(game.getPieceAt(new Location2D(0,0)));
 	}
+	
 	@Test (expected = StrategyException.class)
 	public void testStartGameValidPosition() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
@@ -335,7 +331,7 @@ public class BetaStrategyMainTest {
 		StrategyGameController game = createInitialController();
 		Location initLocation = new Location2D(5,1);
 		Location nextLocation = new Location2D(5,2); // valid move
-		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		game.move(PieceType.SPY, initLocation, nextLocation);
 	}
 
 	@Test
@@ -377,27 +373,6 @@ public class BetaStrategyMainTest {
 		Location nextLocation = new Location2D(4,2); // valid move, but not for flag!
 		assertEquals(PieceType.FLAG, game.getPieceAt(initLocation).getType());
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-	}
-
-	@Test
-	public void testCalculateDistance() throws StrategyException{
-		BetaStrategyGameController game = new BetaStrategyGameController(null, null);
-
-		Location loc_0_0 = new Location2D(0,0);
-		Location loc_0_1 = new Location2D(0,1);
-		Location loc_1_0 = new Location2D(1,0);
-		Location loc_1_1 = new Location2D(1,1);
-		Location loc_10_0 = new Location2D(10,0);
-		Location loc_neg5_neg6 = new Location2D(-5,-6);
-
-		assertEquals(0, game.calculateDistance(loc_0_0,loc_0_0));
-		assertEquals(1, game.calculateDistance(loc_0_0,loc_0_1));
-		assertEquals(1, game.calculateDistance(loc_0_0,loc_1_0));
-		assertEquals(2, game.calculateDistance(loc_0_0,loc_1_1));
-		assertEquals(11, game.calculateDistance(loc_0_1,loc_10_0));
-		assertEquals(12, game.calculateDistance(loc_0_1,loc_neg5_neg6));
-		assertEquals(12, game.calculateDistance(loc_neg5_neg6,loc_0_1));
-		assertEquals(21, game.calculateDistance(loc_neg5_neg6,loc_10_0));
 	}
 
 	// TODO Refactor this test once game ends are actually implemented

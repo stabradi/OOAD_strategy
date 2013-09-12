@@ -10,6 +10,7 @@
 
 package strategy.game;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import strategy.common.StrategyException;
@@ -18,6 +19,7 @@ import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.BetaStrategyGameController;
 
 /**
@@ -74,7 +76,16 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		return new BetaStrategyGameController(redConfiguration,blueConfiguration);
+		Collection<PieceLocationDescriptor> newRedConfiguration = new ArrayList<PieceLocationDescriptor>();
+		Collection<PieceLocationDescriptor> newBlueConfiguration = new ArrayList<PieceLocationDescriptor>();
+		//converting the type of location so that we can use some new functionality
+		for(PieceLocationDescriptor pl: redConfiguration){ 
+			newRedConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
+		}
+		for(PieceLocationDescriptor pl: blueConfiguration){ 
+			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
+		}
+		return new BetaStrategyGameController(newRedConfiguration,newBlueConfiguration);
 	}
 	
 

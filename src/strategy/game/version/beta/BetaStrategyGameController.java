@@ -10,6 +10,7 @@
 
 package strategy.game.version.beta;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import strategy.common.PlayerColor;
@@ -30,8 +31,9 @@ import strategy.game.common.PieceType;
  * @version Sep 13, 2013
  */
 public class BetaStrategyGameController implements StrategyGameController {
-	final private Collection<PieceLocationDescriptor> redConfiguration;
-	final private Collection<PieceLocationDescriptor> blueConfiguration;
+	final private Collection<PieceLocationDescriptor> redInitialConfiguration;
+	final private Collection<PieceLocationDescriptor> blueInitialConfiguration;
+	private Collection<PieceLocationDescriptor> currentConfiguration;
 	
 	private PlayerColor currentTurn; // the player whose turn it currently is
 	private boolean gameOver;
@@ -42,14 +44,19 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * @param blueConfiguration Initial configuration of the blue player's pieces
 	 */
 	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration){
-		this.redConfiguration = redConfiguration;
-		this.blueConfiguration = blueConfiguration;
+		this.redInitialConfiguration = redConfiguration;
+		this.blueInitialConfiguration = blueConfiguration;
+		currentConfiguration = null;
 		gameOver = false;
 	}
 	@Override
 	public void startGame() throws StrategyException {
-		checkNumberOfPieces(redConfiguration,blueConfiguration);
-		checkPiecesOnSide(redConfiguration,blueConfiguration);
+		checkNumberOfPieces(redInitialConfiguration,blueInitialConfiguration);
+		checkPiecesOnSide(redInitialConfiguration,blueInitialConfiguration);
+		
+		currentConfiguration = new ArrayList<PieceLocationDescriptor>();
+		currentConfiguration.addAll(redInitialConfiguration);
+		currentConfiguration.addAll(blueInitialConfiguration);
 		
 		currentTurn = PlayerColor.RED;
 		gameOver = false;
@@ -124,17 +131,20 @@ public class BetaStrategyGameController implements StrategyGameController {
 			throw new StrategyException("You must start the game!");
 		}
 		
-		final PieceLocationDescriptor fromPl = getPlDescriptorAt(from);
-		validateMove(fromPl, from, to);
+		final Location betaFrom = new BetaLocation2D(from);
+		final Location betaTo = new BetaLocation2D(to);
+		
+		final PieceLocationDescriptor fromPl = getPlDescriptorAt(betaFrom);
+		validateMove(fromPl, betaFrom, betaTo);
 		
 		// Check for a strike
-		PieceLocationDescriptor toPl = getPlDescriptorAt(to);
+		final PieceLocationDescriptor toPl = getPlDescriptorAt(betaTo);
 		MoveResult moveResult;
 		if((toPl != null) && (toPl.getPiece().getOwner() != currentTurn)){
 			moveResult = strikeMove(fromPl, toPl);
 		}
 		else{
-			moveResult = normalMove(fromPl, to);
+			moveResult = normalMove(fromPl, betaTo);
 		}
 		nextTurn();
 		return moveResult;
@@ -142,6 +152,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 	
 	@Override
 	public Piece getPieceAt(Location location) {
+		if(!gameStarted) return null;
 		final PieceLocationDescriptor pl = getPlDescriptorAt(location);
 		if(pl == null) return null;
 		else return pl.getPiece();
@@ -151,40 +162,19 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * Helper for move(), updates the configurations for moves involving strikes
 	 */
 	private MoveResult strikeMove(PieceLocationDescriptor attacker, PieceLocationDescriptor defender){
-		StrikeResultBeta result = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
+		final StrikeResultBeta result = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
 		if(result == StrikeResultBeta.DRAW){
-			if(attacker.getPiece().getOwner() == PlayerColor.RED){
-				redConfiguration.remove(attacker);
-				blueConfiguration.remove(defender);
-			}
-			else{
-				redConfiguration.remove(defender);
-				blueConfiguration.remove(attacker);
-			}
+			currentConfiguration.remove(defender);
+			currentConfiguration.remove(attacker);
 			return new MoveResult(MoveResultStatus.OK, null); // TODO Is this correct BattleWinner info for draw?
 		}
 		else if(result == StrikeResultBeta.ATTACKER_WINS){
-			Collection<PieceLocationDescriptor> loseConfig;
-			if(attacker.getPiece().getOwner() == PlayerColor.RED){
-				loseConfig = blueConfiguration;
-			}
-			else{
-				loseConfig = redConfiguration;
-			}
-			loseConfig.remove(defender);
+			currentConfiguration.remove(defender);
 			normalMove(attacker, defender.getLocation());
 			return new MoveResult(MoveResultStatus.OK, attacker);
-			
 		}
-		else{ //if(result == StrikeResultBeta.ATTACKER_LOSES){
-			Collection<PieceLocationDescriptor> loseConfig;
-			if(attacker.getPiece().getOwner() == PlayerColor.RED){
-				loseConfig = redConfiguration;
-			}
-			else{
-				loseConfig = blueConfiguration;
-			}
-			loseConfig.remove(attacker);
+		else{ // Attacker loses
+			currentConfiguration.remove(attacker);
 			normalMove(defender, attacker.getLocation());
 			return new MoveResult(MoveResultStatus.OK, defender);
 		}
@@ -193,19 +183,10 @@ public class BetaStrategyGameController implements StrategyGameController {
 	/*
 	 * Helper for move(), updates, the configuration for moves not involving strikes
 	 */
-	private MoveResult normalMove(PieceLocationDescriptor pl, Location to){
-		Collection<PieceLocationDescriptor> playerConfiguration;
-		if(pl.getPiece().getOwner() == PlayerColor.BLUE){
-			playerConfiguration = blueConfiguration;
-		}
-		else{
-			playerConfiguration = redConfiguration;
-		}
-		
+	private MoveResult normalMove(PieceLocationDescriptor pl, Location to){		
 		// Remove old PieceLocationDescriptor (for from) and add new one (for to)
-		playerConfiguration.remove(pl);
-		playerConfiguration.add(new PieceLocationDescriptor(pl.getPiece(), to));
-		
+		currentConfiguration.remove(pl);
+		currentConfiguration.add(new PieceLocationDescriptor(pl.getPiece(), to));
 		return new MoveResult(MoveResultStatus.OK, null);
 	}
 	
@@ -276,7 +257,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 		if((getPieceAt(to) != null) && (getPieceAt(to).getOwner() == currentTurn)){
 			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
 		}
-		if(calculateDistance(from, to) != 1){
+		if(from.distanceTo(to) != 1){
 			throw new StrategyException("Must move piece exactly one space orthogonally");
 		}
 		if(pl.getPiece().getType() == PieceType.FLAG){
@@ -289,11 +270,8 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * specified location, or null if there is none
 	 */
 	private PieceLocationDescriptor getPlDescriptorAt(Location location){
-		PieceLocationDescriptor pl;
-		pl = getPlDescriptorAtFromConfig(location, redConfiguration);
-		if(pl == null){
-			pl = getPlDescriptorAtFromConfig(location, blueConfiguration);
-		}
+		final PieceLocationDescriptor pl;
+		pl = getPlDescriptorAtFromConfig(location, currentConfiguration);
 		return pl;
 	}
 	
@@ -314,18 +292,6 @@ public class BetaStrategyGameController implements StrategyGameController {
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Returns the Manhattan distance between two Locations with X and Y coordinates
-	 * @param from The first Location
-	 * @param to the second location
-	 * @return the Manhattan distance between from and to
-	 */
-	protected int calculateDistance(Location from, Location to){
-		final int xDistance = Math.abs(to.getCoordinate(Coordinate.X_COORDINATE) - from.getCoordinate(Coordinate.X_COORDINATE));
-		final int yDistance = Math.abs(to.getCoordinate(Coordinate.Y_COORDINATE) - from.getCoordinate(Coordinate.Y_COORDINATE));
-		return xDistance + yDistance;
 	}
 
 	/*
