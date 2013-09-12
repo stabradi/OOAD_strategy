@@ -1,6 +1,6 @@
 x Create a beta strategy game
 X Initialize the board
-Check board initialization
+X Check board initialization
 Make valid move, no combat -> MoveResult
 Combat ??
 Make valid move with combat -> MoveResult
