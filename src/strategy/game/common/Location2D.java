@@ -10,6 +10,7 @@
 
 package strategy.game.common;
 
+import strategy.game.common.*;
 
 /**
  * Description
@@ -33,17 +34,10 @@ public class Location2D implements Location
 				: yCoordinate;
 	}
 
-	/**
-	 * Returns the Manhattan distance between two locations
-	 * @param otherLocation the location to get the distance from this location
-	 * @return the distance to the other location
-	 */
 	@Override
 	public int distanceTo(Location otherLocation)
 	{
-		int xDistance = Math.abs(xCoordinate - otherLocation.getCoordinate(Coordinate.X_COORDINATE));
-		int yDistance = Math.abs(yCoordinate - otherLocation.getCoordinate(Coordinate.Y_COORDINATE));
-		return xDistance + yDistance;
+		return 0;
 	}
 	
 	@Override

@@ -47,26 +47,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 		}
 		
 		PieceLocationDescriptor pl = getPlDescriptorAt(from);
-		
-		// Check that move is valid
-		if(pl == null){
-			throw new StrategyException("Cannot move piece: There is no piece on that space!");
-		}
-		if(currentTurn != pl.getPiece().getOwner()){
-			throw new StrategyException("Cannot move piece: It is not the piece owner's turn!");
-		}
-		if(!locationIsOnBoard(to)){
-			throw new StrategyException("Cannot move piece off of board");
-		}
-		if(getPieceAt(to) != null){
-			throw new StrategyException("Cannot move piece into another piece (strikes not yet implemented)");
-		}
-		if(from.distanceTo(to) != 1){
-			throw new StrategyException("Must move piece exactly one space orthogonally");
-		}
-		if(pl.getPiece().getType() == PieceType.FLAG){
-			throw new StrategyException("Cannot move the flag!");
-		}
+		validateMove(pl, from, to);
 		
 		// Select appropriate player's configuration
 		Collection<PieceLocationDescriptor> playerConfiguration;
@@ -85,7 +66,6 @@ public class BetaStrategyGameController implements StrategyGameController {
 		playerConfiguration.add(new PieceLocationDescriptor(pl.getPiece(), to));
 		
 		nextTurn();
-
 		return new MoveResult(MoveResultStatus.OK, null);
 	}
 	
@@ -114,6 +94,30 @@ public class BetaStrategyGameController implements StrategyGameController {
 	}
 	
 	/*
+	 * This method determines whether or not a move is valid, and throws an exception if not
+	 */
+	private void validateMove(PieceLocationDescriptor pl, Location from, Location to) throws StrategyException{
+		if(pl == null){
+			throw new StrategyException("Cannot move piece: There is no piece on that space!");
+		}
+		if(currentTurn != pl.getPiece().getOwner()){
+			throw new StrategyException("Cannot move piece: It is not the piece owner's turn!");
+		}
+		if(!locationIsOnBoard(to)){
+			throw new StrategyException("Cannot move piece off of board");
+		}
+		if(getPieceAt(to) != null){
+			throw new StrategyException("Cannot move piece into another piece (strikes not yet implemented)");
+		}
+		if(calculateDistance(from, to) != 1){
+			throw new StrategyException("Must move piece exactly one space orthogonally");
+		}
+		if(pl.getPiece().getType() == PieceType.FLAG){
+			throw new StrategyException("Cannot move the flag!");
+		}
+	}
+	
+	/*
 	 * This method returns the piece on the game board that is associated with the
 	 * specified location, or null if there is none
 	 */
@@ -130,7 +134,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * Helper for getPlDescriptorAt. Gets pl descriptor from only a given configuration,
 	 * or null if there is none.
 	 */
-	private PieceLocationDescriptor getPlDescriptorAtFromConfig(Location location, Collection<PieceLocationDescriptor> config){
+	protected PieceLocationDescriptor getPlDescriptorAtFromConfig(Location location, Collection<PieceLocationDescriptor> config){
 		Location plLoc = null;
 		for(PieceLocationDescriptor pl: config){
 			plLoc = pl.getLocation();
@@ -141,10 +145,18 @@ public class BetaStrategyGameController implements StrategyGameController {
 		}
 		return null;
 	}
+	
+	/*
+	 * Returns the Manhatten distance between two Locations with X and Y coordinates
+	 */
+	protected int calculateDistance(Location from, Location to){
+		int xDistance = Math.abs(to.getCoordinate(Coordinate.X_COORDINATE) - from.getCoordinate(Coordinate.X_COORDINATE));
+		int yDistance = Math.abs(to.getCoordinate(Coordinate.Y_COORDINATE) - from.getCoordinate(Coordinate.Y_COORDINATE));
+		return xDistance + yDistance;
+	}
 
 	/*
 	 * Verifies that a position is in fact on the board
-	 * TODO VERIFY THIS
 	 */
 	private boolean locationIsOnBoard(Location to){
 		int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
