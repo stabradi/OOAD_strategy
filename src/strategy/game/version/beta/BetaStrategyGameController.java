@@ -2,11 +2,13 @@ package strategy.game.version.beta;
 
 import java.util.Collection;
 
+import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
+import strategy.game.common.MoveResultStatus;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
@@ -58,26 +60,49 @@ public class BetaStrategyGameController implements StrategyGameController {
 	@Override
 	public MoveResult move(PieceType piece, Location from, Location to)
 			throws StrategyException {
-		// TODO Auto-generated method stub
-		return null;
+		PieceLocationDescriptor pl = getPlDescriptorAt(from);
+		if(pl.getPiece().getOwner() == PlayerColor.BLUE){
+			blueConfiguration.remove(pl);
+			blueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(), to));
+		}
+		else{
+			redConfiguration.remove(pl);
+			redConfiguration.add(new PieceLocationDescriptor(pl.getPiece(), to));
+		}
+		return new MoveResult(MoveResultStatus.OK, null);
 	}
-
+	
 	@Override
 	public Piece getPieceAt(Location location) {
-		// TODO Auto-generated method stub
-		Location plLoc = null;
-		for(PieceLocationDescriptor pl: redConfiguration){
-			plLoc = pl.getLocation();
-			if(plLoc.getCoordinate(Coordinate.X_COORDINATE) == location.getCoordinate(Coordinate.X_COORDINATE) && 
-					plLoc.getCoordinate(Coordinate.Y_COORDINATE) == location.getCoordinate(Coordinate.Y_COORDINATE)){
-				return pl.getPiece();
-			}
+		PieceLocationDescriptor pl = getPlDescriptorAt(location);
+		if(pl == null) return null;
+		else return pl.getPiece();
+	}
+	
+	/*
+	 * This method returns the piece on the game board that is associated with the
+	 * specified location, or null if there is none
+	 */
+	private PieceLocationDescriptor getPlDescriptorAt(Location location){
+		PieceLocationDescriptor pl;
+		pl = getPlDescriptorAtFromConfig(location, redConfiguration);
+		if(pl == null){
+			pl = getPlDescriptorAtFromConfig(location, blueConfiguration);
 		}
-		for(PieceLocationDescriptor pl: blueConfiguration){
+		return pl;
+	}
+	
+	/*
+	 * Helper for getPlDescriptorAt. Gets pl descriptor from only a given configuration,
+	 * or null if there is none.
+	 */
+	private PieceLocationDescriptor getPlDescriptorAtFromConfig(Location location, Collection<PieceLocationDescriptor> config){
+		Location plLoc = null;
+		for(PieceLocationDescriptor pl: config){
 			plLoc = pl.getLocation();
 			if(plLoc.getCoordinate(Coordinate.X_COORDINATE) == location.getCoordinate(Coordinate.X_COORDINATE) && 
 					plLoc.getCoordinate(Coordinate.Y_COORDINATE) == location.getCoordinate(Coordinate.Y_COORDINATE)){
-				return pl.getPiece();
+				return pl;
 			}
 		}
 		return null;

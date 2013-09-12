@@ -1,7 +1,7 @@
 x Create a beta strategy game
 X Initialize the board
-Check board initialization
-Make valid move, no combat -> MoveResult
+Sam - Check board initialization
+Chris - Make valid move, no combat -> MoveResult
 Combat ??
 Make valid move with combat -> MoveResult
 Flag captured -> end game with appropriate winner
