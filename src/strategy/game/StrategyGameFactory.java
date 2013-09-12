@@ -11,8 +11,14 @@
 package strategy.game;
 
 import java.util.Collection;
-import strategy.common.*;
+
+import strategy.common.StrategyException;
+import strategy.common.StrategyRuntimeException;
+import strategy.game.common.Coordinate;
+import strategy.game.common.Location;
+import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.version.beta.BetaStrategyGameController;
 
 /**
  * <p>
@@ -61,13 +67,15 @@ public class StrategyGameFactory
 	 * @param redConfiguration the initial starting configuration for the RED pieces
 	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
 	 * @return the Beta Strategy game instance with the initial configuration of pieces
-	 * @throws StrategyException if either configuration is correct
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
 	 */
 	public StrategyGameController makeBetaStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
-	{
-		throw new StrategyRuntimeException("Change this implementation");
+	{	
+		return new BetaStrategyGameController(redConfiguration,blueConfiguration);
 	}
+	
+
 }
