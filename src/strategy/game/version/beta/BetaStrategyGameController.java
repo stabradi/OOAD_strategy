@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
 package strategy.game.version.beta;
 
 import java.util.Collection;
@@ -14,22 +24,32 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 
+/**
+ * The BetaStrategyGameController implements the game core for
+ * the Beta Strategy version.
+ * @author cpnota and stabradi
+ * @version Sep 13, 2013
+ */
 public class BetaStrategyGameController implements StrategyGameController {
-	private Collection<PieceLocationDescriptor> redConfiguration;
-	private Collection<PieceLocationDescriptor> blueConfiguration;
+	final private Collection<PieceLocationDescriptor> redConfiguration;
+	final private Collection<PieceLocationDescriptor> blueConfiguration;
 	
 	private PlayerColor currentTurn; // the player whose turn it currently is
 	private boolean gameOver;
 	private boolean gameStarted;
 
-	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException{
+	/**
+	 * @param redConfiguration Initial configuration of the red player's pieces
+	 * @param blueConfiguration Initial configuration of the blue player's pieces
+	 */
+	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration){
 		this.redConfiguration = redConfiguration;
 		this.blueConfiguration = blueConfiguration;
 		gameOver = false;
 	}
 
 	@Override
-	public void startGame() throws StrategyException {
+	public void startGame() {
 		currentTurn = PlayerColor.RED;
 		gameOver = false;
 		gameStarted = true;
@@ -46,7 +66,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 			throw new StrategyException("You must start the game!");
 		}
 		
-		PieceLocationDescriptor pl = getPlDescriptorAt(from);
+		final PieceLocationDescriptor pl = getPlDescriptorAt(from);
 		validateMove(pl, from, to);
 		
 		// Select appropriate player's configuration
@@ -71,7 +91,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 	
 	@Override
 	public Piece getPieceAt(Location location) {
-		PieceLocationDescriptor pl = getPlDescriptorAt(location);
+		final PieceLocationDescriptor pl = getPlDescriptorAt(location);
 		if(pl == null) return null;
 		else return pl.getPiece();
 	}
@@ -130,9 +150,12 @@ public class BetaStrategyGameController implements StrategyGameController {
 		return pl;
 	}
 	
-	/*
-	 * Helper for getPlDescriptorAt. Gets pl descriptor from only a given configuration,
+	/**
+	 * Gets PieceLocationDescriptor descriptor from only a given configuration at a given Location
 	 * or null if there is none.
+	 * @param location Location to look for an associated PieceLocationDescriptor
+	 * @param config Configuration to search for with given Location
+	 * @return A PieceLocationDescriptor with the given Location or null if there is none
 	 */
 	protected PieceLocationDescriptor getPlDescriptorAtFromConfig(Location location, Collection<PieceLocationDescriptor> config){
 		Location plLoc = null;
@@ -146,12 +169,15 @@ public class BetaStrategyGameController implements StrategyGameController {
 		return null;
 	}
 	
-	/*
-	 * Returns the Manhatten distance between two Locations with X and Y coordinates
+	/**
+	 * Returns the Manhattan distance between two Locations with X and Y coordinates
+	 * @param from The first Location
+	 * @param to the second location
+	 * @return the Manhattan distance between from and to
 	 */
 	protected int calculateDistance(Location from, Location to){
-		int xDistance = Math.abs(to.getCoordinate(Coordinate.X_COORDINATE) - from.getCoordinate(Coordinate.X_COORDINATE));
-		int yDistance = Math.abs(to.getCoordinate(Coordinate.Y_COORDINATE) - from.getCoordinate(Coordinate.Y_COORDINATE));
+		final int xDistance = Math.abs(to.getCoordinate(Coordinate.X_COORDINATE) - from.getCoordinate(Coordinate.X_COORDINATE));
+		final int yDistance = Math.abs(to.getCoordinate(Coordinate.Y_COORDINATE) - from.getCoordinate(Coordinate.Y_COORDINATE));
 		return xDistance + yDistance;
 	}
 
@@ -159,8 +185,8 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * Verifies that a position is in fact on the board
 	 */
 	private boolean locationIsOnBoard(Location to){
-		int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
-		int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
+		final int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
+		final int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
 		return ((xcoord >= 0) && (ycoord >= 0) && (xcoord <= 5) && (ycoord <= 5));
 	}
 }

@@ -7,3 +7,4 @@ Sam - Combat ??
 Chris - Make valid move with combat -> MoveResult
 Flag captured -> end game with appropriate winner
 After sixth move -> draw
+Alpha strategy -> use factory
