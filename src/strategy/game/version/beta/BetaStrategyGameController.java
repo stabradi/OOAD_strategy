@@ -124,12 +124,78 @@ public class BetaStrategyGameController implements StrategyGameController {
 			throw new StrategyException("You must start the game!");
 		}
 		
-		final PieceLocationDescriptor pl = getPlDescriptorAt(from);
-		validateMove(pl, from, to);
+		final PieceLocationDescriptor fromPl = getPlDescriptorAt(from);
+		validateMove(fromPl, from, to);
 		
-		// Select appropriate player's configuration
+		// Check for a strike
+		PieceLocationDescriptor toPl = getPlDescriptorAt(to);
+		MoveResult moveResult;
+		if((toPl != null) && (toPl.getPiece().getOwner() != currentTurn)){
+			moveResult = strikeMove(fromPl, toPl);
+		}
+		else{
+			moveResult = normalMove(fromPl, to);
+		}
+		nextTurn();
+		return moveResult;
+	}
+	
+	@Override
+	public Piece getPieceAt(Location location) {
+		final PieceLocationDescriptor pl = getPlDescriptorAt(location);
+		if(pl == null) return null;
+		else return pl.getPiece();
+	}
+	
+	/*
+	 * Helper for move(), updates the configurations for moves involving strikes
+	 */
+	private MoveResult strikeMove(PieceLocationDescriptor attacker, PieceLocationDescriptor defender){
+		StrikeResultBeta result = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
+		if(result == StrikeResultBeta.DRAW){
+			if(attacker.getPiece().getOwner() == PlayerColor.RED){
+				redConfiguration.remove(attacker);
+				blueConfiguration.remove(defender);
+			}
+			else{
+				redConfiguration.remove(defender);
+				blueConfiguration.remove(attacker);
+			}
+			return new MoveResult(MoveResultStatus.OK, null); // TODO Is this correct BattleWinner info for draw?
+		}
+		else if(result == StrikeResultBeta.ATTACKER_WINS){
+			Collection<PieceLocationDescriptor> loseConfig;
+			if(attacker.getPiece().getOwner() == PlayerColor.RED){
+				loseConfig = blueConfiguration;
+			}
+			else{
+				loseConfig = redConfiguration;
+			}
+			loseConfig.remove(defender);
+			normalMove(attacker, defender.getLocation());
+			return new MoveResult(MoveResultStatus.OK, attacker);
+			
+		}
+		else{ //if(result == StrikeResultBeta.ATTACKER_LOSES){
+			Collection<PieceLocationDescriptor> loseConfig;
+			if(attacker.getPiece().getOwner() == PlayerColor.RED){
+				loseConfig = redConfiguration;
+			}
+			else{
+				loseConfig = blueConfiguration;
+			}
+			loseConfig.remove(attacker);
+			normalMove(defender, attacker.getLocation());
+			return new MoveResult(MoveResultStatus.OK, defender);
+		}
+	}
+	
+	/*
+	 * Helper for move(), updates, the configuration for moves not involving strikes
+	 */
+	private MoveResult normalMove(PieceLocationDescriptor pl, Location to){
 		Collection<PieceLocationDescriptor> playerConfiguration;
-		if(currentTurn == PlayerColor.BLUE){
+		if(pl.getPiece().getOwner() == PlayerColor.BLUE){
 			playerConfiguration = blueConfiguration;
 		}
 		else{
@@ -140,15 +206,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 		playerConfiguration.remove(pl);
 		playerConfiguration.add(new PieceLocationDescriptor(pl.getPiece(), to));
 		
-		nextTurn();
 		return new MoveResult(MoveResultStatus.OK, null);
-	}
-	
-	@Override
-	public Piece getPieceAt(Location location) {
-		final PieceLocationDescriptor pl = getPlDescriptorAt(location);
-		if(pl == null) return null;
-		else return pl.getPiece();
 	}
 	
 	/*
@@ -215,8 +273,8 @@ public class BetaStrategyGameController implements StrategyGameController {
 		if(!locationIsOnBoard(to)){
 			throw new StrategyException("Cannot move piece off of board");
 		}
-		if(getPieceAt(to) != null){
-			throw new StrategyException("Cannot move piece into another piece (strikes not yet implemented)");
+		if((getPieceAt(to) != null) && (getPieceAt(to).getOwner() == currentTurn)){
+			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
 		}
 		if(calculateDistance(from, to) != 1){
 			throw new StrategyException("Must move piece exactly one space orthogonally");
