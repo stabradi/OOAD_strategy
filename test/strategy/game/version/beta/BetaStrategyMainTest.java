@@ -65,7 +65,6 @@ public class BetaStrategyMainTest {
 		List<PieceLocationDescriptor> config = new ArrayList<PieceLocationDescriptor>();
 		for(int y = 0, count = 0; y < 2; y++){
 			for(int x = 0; x < 6; x++, count++){
-				System.out.println("x: " + (x + startingX) + " y: " + (y + startingY) + " piece: " + pieces.get(count));
 				config.add(new PieceLocationDescriptor(pieces.get(count), new Location2D(x + startingX, y + startingY)));
 			}
 		}

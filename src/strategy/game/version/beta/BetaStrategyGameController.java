@@ -38,14 +38,15 @@ public class BetaStrategyGameController implements StrategyGameController {
 	private PlayerColor currentTurn; // the player whose turn it currently is
 	private boolean gameOver;
 	private boolean gameStarted;
+	private int moveCounter;
 
 	/**
 	 * @param redConfiguration Initial configuration of the red player's pieces
 	 * @param blueConfiguration Initial configuration of the blue player's pieces
 	 */
 	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration){
-		this.redInitialConfiguration = redConfiguration;
-		this.blueInitialConfiguration = blueConfiguration;
+		redInitialConfiguration = redConfiguration;
+		blueInitialConfiguration = blueConfiguration;
 		currentConfiguration = null;
 		gameOver = false;
 	}
@@ -61,6 +62,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 		currentTurn = PlayerColor.RED;
 		gameOver = false;
 		gameStarted = true;
+		moveCounter = 0;
 
 	}
 	protected void checkNumberOfPieces(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
@@ -147,6 +149,9 @@ public class BetaStrategyGameController implements StrategyGameController {
 			moveResult = normalMove(fromPl, betaTo);
 		}
 		nextTurn();
+		if((moveCounter >= 12) && moveResult.getStatus() == MoveResultStatus.OK){
+			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
+		}
 		return moveResult;
 	}
 	
@@ -162,22 +167,34 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * Helper for move(), updates the configurations for moves involving strikes
 	 */
 	private MoveResult strikeMove(PieceLocationDescriptor attacker, PieceLocationDescriptor defender){
-		final StrikeResultBeta result = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
-		if(result == StrikeResultBeta.DRAW){
+		final MoveResult result;
+		final StrikeResultBeta strikeResult = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
+		if(strikeResult == StrikeResultBeta.DRAW){
 			currentConfiguration.remove(defender);
 			currentConfiguration.remove(attacker);
-			return new MoveResult(MoveResultStatus.OK, null); // TODO Is this correct BattleWinner info for draw?
+			result = new MoveResult(MoveResultStatus.OK, null); // TODO Is this correct BattleWinner info for draw?
 		}
-		else if(result == StrikeResultBeta.ATTACKER_WINS){
+		else if(strikeResult == StrikeResultBeta.ATTACKER_WINS){
 			currentConfiguration.remove(defender);
 			normalMove(attacker, defender.getLocation());
-			return new MoveResult(MoveResultStatus.OK, attacker);
+			if(defender.getPiece().getType() == PieceType.FLAG){
+				if(attacker.getPiece().getOwner() == PlayerColor.BLUE){
+					result = new MoveResult(MoveResultStatus.BLUE_WINS, attacker);
+				}
+				else{
+					result = new MoveResult(MoveResultStatus.RED_WINS, attacker);
+				}
+			}
+			else{
+				result = new MoveResult(MoveResultStatus.OK, attacker);
+			}
 		}
 		else{ // Attacker loses
 			currentConfiguration.remove(attacker);
 			normalMove(defender, attacker.getLocation());
-			return new MoveResult(MoveResultStatus.OK, defender);
+			result = new MoveResult(MoveResultStatus.OK, defender);
 		}
+		return result;
 	}
 	
 	/*
@@ -201,6 +218,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 		else{
 			currentTurn = PlayerColor.RED;
 		}
+		moveCounter++;
 		return currentTurn;
 	}
 	
