@@ -103,12 +103,8 @@ public class BetaStrategyGameController implements StrategyGameController {
 		}
 		return true;
 	}
-       
-
-    
 
 	// TODO Strikes
->>>>>>> d058440787272d6a39e01d55e317c03a34d9ed22
 	@Override
 	public MoveResult move(PieceType piece, Location from, Location to)
 			throws StrategyException {
