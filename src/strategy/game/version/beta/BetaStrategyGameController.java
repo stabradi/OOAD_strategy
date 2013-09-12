@@ -156,6 +156,10 @@ public class BetaStrategyGameController implements StrategyGameController {
 		return currentTurn;
 	}
 	
+	protected StrikeResultBeta combatResult(PieceType attacker, PieceType defender){
+		return null;
+	}
+	
 	/*
 	 * This method determines whether or not a move is valid, and throws an exception if not
 	 */
