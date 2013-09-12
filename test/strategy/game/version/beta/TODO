@@ -2,7 +2,8 @@ x Create a beta strategy game
 X Initialize the board
 Sam - Check board initialization
 Chris - Make valid move, no combat -> MoveResult
-Combat ??
-Make valid move with combat -> MoveResult
+Refactor, make a subclass of Location2D to implement distanceTo
+Sam - Combat ??
+Chris - Make valid move with combat -> MoveResult
 Flag captured -> end game with appropriate winner
 After sixth move -> draw
