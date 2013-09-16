@@ -74,7 +74,7 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * @throws StrategyException if the types of any of the pieces are wrong
 	 */
 	protected void checkNumberOfPieces(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
-		if(!(checkNumberOfPieces(config1)==0 || checkNumberOfPieces(config2)==0)){
+		if(!(checkNumberOfPieces(config1)==0 && checkNumberOfPieces(config2)==0)){
 			throw new StrategyException("incorrect number of pieces"+checkNumberOfPieces(config1)+"|"+checkNumberOfPieces(config2));
 		}
 	}

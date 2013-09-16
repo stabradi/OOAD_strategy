@@ -88,6 +88,20 @@ public class BetaStrategyMainTest {
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
 		game.startGame();
 	}
+	
+	@Test(expected=StrategyException.class)
+	public void testRedConfigurationNull() throws StrategyException
+	{
+		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+		StrategyGameFactory.getInstance().makeBetaStrategyGame(null, blue);
+	}
+	
+	@Test(expected=StrategyException.class)
+	public void testBlueConfigurationNulll() throws StrategyException
+	{
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		StrategyGameFactory.getInstance().makeBetaStrategyGame(red, null);
+	}
 
 	@Test (expected = StrategyException.class)
 	public void testStartGameValidlayout() throws StrategyException{
