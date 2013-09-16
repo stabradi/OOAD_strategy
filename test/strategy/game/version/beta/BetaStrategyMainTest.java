@@ -17,6 +17,8 @@ import strategy.game.StrategyGameFactory;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.Location2D;
+import strategy.game.common.MoveResult;
+import strategy.game.common.MoveResultStatus;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
@@ -577,5 +579,192 @@ public class BetaStrategyMainTest {
 	@Test
 	public void testAreEnumsStupidBecauseTheyRequireThisCallToBeMadeForCodeCoverage(){
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,StrikeResultBeta.valueOf("ATTACKER_WINS"));
+	}
+	
+	@Test
+	public void testFlagCapture() throws StrategyException{
+		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
+		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(0,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.MARSHAL,    PlayerColor.BLUE), new Location2D(1,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.BLUE), new Location2D(2,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.BLUE), new Location2D(3,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.BLUE), new Location2D(4,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.BLUE), new Location2D(5,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG,       PlayerColor.BLUE), new Location2D(0,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(1,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(2,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(3,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(4,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(5,4)));
+		
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.MARSHAL,    PlayerColor.RED), new Location2D(1,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.RED), new Location2D(2,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.RED), new Location2D(3,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.RED), new Location2D(4,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.RED), new Location2D(5,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(0,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(1,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(2,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.RED), new Location2D(3,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.RED), new Location2D(4,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.RED), new Location2D(5,1)));
+		
+		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
+		game.startGame();
+		
+
+		// Red moves a Lieutenant
+		Location initLocation = new Location2D(0,1);
+		Location nextLocation = new Location2D(0,2);
+		Piece redLieutenant = game.getPieceAt(initLocation);
+		assertNotNull(redLieutenant);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant
+		initLocation = new Location2D(5,4);
+		nextLocation = new Location2D(5,3);
+		Piece blueSergeant = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, blueSergeant.getType());
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Red moves again
+		initLocation = new Location2D(0,2);
+		nextLocation = new Location2D(0,3);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves next to red
+		initLocation = new Location2D(5,3);
+		nextLocation = new Location2D(4,3);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Red attacks blue flag
+		initLocation = new Location2D(0,3);
+		nextLocation = new Location2D(0,4);
+		MoveResult endgame = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		assertEquals(MoveResultStatus.RED_WINS,endgame.getStatus());
+		
+		// Red attacks blue flag
+		initLocation = new Location2D(1,4);
+		nextLocation = new Location2D(1,3);
+		try{
+			game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		}catch(StrategyException e){
+			assertEquals("The game is over, you cannot make a move",e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testDrawAfterSixMoves() throws StrategyException{
+		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
+		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(0,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.MARSHAL,    PlayerColor.BLUE), new Location2D(1,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.BLUE), new Location2D(2,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.BLUE), new Location2D(3,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.BLUE), new Location2D(4,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.BLUE), new Location2D(5,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG,       PlayerColor.BLUE), new Location2D(0,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(1,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(2,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(3,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(4,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(5,4)));
+		
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.MARSHAL,    PlayerColor.RED), new Location2D(1,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.RED), new Location2D(2,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL,    PlayerColor.RED), new Location2D(3,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.RED), new Location2D(4,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN,    PlayerColor.RED), new Location2D(5,0)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(0,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(1,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(2,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.RED), new Location2D(3,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.RED), new Location2D(4,1)));
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT,   PlayerColor.RED), new Location2D(5,1)));
+		
+		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
+		game.startGame();
+		
+
+		// Red moves a Lieutenant
+		Location initLocation = new Location2D(0,1);
+		Location nextLocation = new Location2D(0,2);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant
+		initLocation = new Location2D(5,4);
+		nextLocation = new Location2D(5,3);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		// Red moves a Lieutenant back
+		initLocation = new Location2D(0,2);
+		nextLocation = new Location2D(0,1);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant back
+		initLocation = new Location2D(5,3);
+		nextLocation = new Location2D(5,4);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		
+		
+		
+		// Red moves a Lieutenant
+		initLocation = new Location2D(0,1);
+		nextLocation = new Location2D(0,2);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant
+		initLocation = new Location2D(5,4);
+		nextLocation = new Location2D(5,3);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		// Red moves a Lieutenant back
+		initLocation = new Location2D(0,2);
+		nextLocation = new Location2D(0,1);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant back
+		initLocation = new Location2D(5,3);
+		nextLocation = new Location2D(5,4);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		
+		
+		// Red moves a Lieutenant
+		initLocation = new Location2D(0,1);
+		nextLocation = new Location2D(0,2);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant
+		initLocation = new Location2D(5,4);
+		nextLocation = new Location2D(5,3);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		// Red moves a Lieutenant back
+		initLocation = new Location2D(0,2);
+		nextLocation = new Location2D(0,1);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant back
+		initLocation = new Location2D(5,3);
+		nextLocation = new Location2D(5,4);
+		MoveResult endgame = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		
+		assertEquals(MoveResultStatus.DRAW,endgame.getStatus());
+		try{
+			game.move(game.getPieceAt(new Location2D(0,1)).getType(), new Location2D(0,1), new Location2D(0,2));
+		}catch(StrategyException e){
+			assertEquals("The game is over, you cannot make a move",e.getMessage());
+		}
 	}
 }
