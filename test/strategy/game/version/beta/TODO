@@ -5,7 +5,7 @@ X - Make valid move, no combat -> MoveResult
 x -Refactor, make a subclass of Location2D to implement distanceTo
 x - Combat ??
 x - Make valid move with combat -> MoveResult
-Flag captured -> end game with appropriate winner
-After sixth move -> draw
+X Flag captured -> end game with appropriate winner
+X After sixth move -> draw
 Alpha strategy -> use factory
 Finish javadoc and code coverage

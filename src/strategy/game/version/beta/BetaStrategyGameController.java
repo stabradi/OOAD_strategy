@@ -65,11 +65,23 @@ public class BetaStrategyGameController implements StrategyGameController {
 		moveCounter = 0;
 
 	}
+	
+	/**
+	 * @param config1 first set of pieces to check for correct pieces
+	 * @param config2 second set of pieces to check for correct pieces
+	 * @throws StrategyException if the types of any of the pieces are wrong
+	 */
 	protected void checkNumberOfPieces(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
 		if(!(checkNumberOfPieces(config1)==0 || checkNumberOfPieces(config2)==0)){
 			throw new StrategyException("incorrect number of pieces"+checkNumberOfPieces(config1)+"|"+checkNumberOfPieces(config2));
 		}
 	}
+	
+	/**
+	 * @param config the set of pieces to check for correct pieces
+	 * @return number code indicating in what way the number of pieces is wrong,
+	 *  or 0 if it is not wrong, this is nicer than a boolean for debugging
+	 */
 	protected int checkNumberOfPieces(Collection<PieceLocationDescriptor> config){
 		int flag = 1;
 		int marshal = 1;
@@ -98,12 +110,22 @@ public class BetaStrategyGameController implements StrategyGameController {
 		return (flag+marshal+colonels+captains+lieutanants+sergeant);//==0;
 	}
 	
+	/**
+	 * @param config1 first set of pieces to check for correct placement
+	 * @param config2 second set of pieces to check for correct placement
+	 * @throws StrategyException if the placements are wrong
+	 */
 	protected void checkPiecesOnSide(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
 		if(!(checkPiecesOnSide(PlayerColor.RED,config1)&&checkPiecesOnSide(PlayerColor.BLUE,config2))){
 			throw new StrategyException("pieces not in valid positions");
 		}
 	}
 	
+	/**
+	 * @param color the color of the pieces being evaluated
+	 * @param config second set of pieces to check for correct placement
+	 * @return indication of there being any pieces not on their own side
+	 */
 	protected boolean checkPiecesOnSide(PlayerColor color,Collection<PieceLocationDescriptor> config){
 		int x;
 		int y;
@@ -222,6 +244,12 @@ public class BetaStrategyGameController implements StrategyGameController {
 		return currentTurn;
 	}
 	
+	/**
+	 * 
+	 * @param attacker the piece attacking
+	 * @param defender the piece defending
+	 * @return who won the combat
+	 */
 	protected StrikeResultBeta combatResult(PieceType attacker, PieceType defender){
 		if(attacker!=PieceType.MINER && defender==PieceType.BOMB) return StrikeResultBeta.ATTACKER_LOSES;
 		if(attacker==PieceType.SPY && defender==PieceType.MARSHAL) return StrikeResultBeta.ATTACKER_WINS;
