@@ -14,11 +14,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import strategy.common.StrategyException;
-import strategy.common.StrategyRuntimeException;
-import strategy.game.common.Coordinate;
-import strategy.game.common.Location;
-import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.version.alpha.AlphaStrategyGameController;
 import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.BetaStrategyGameController;
 
@@ -61,7 +58,7 @@ public class StrategyGameFactory
 	 */
 	public StrategyGameController makeAlphaStrategyGame()
 	{
-		throw new StrategyRuntimeException("Change this implementation");
+		return new AlphaStrategyGameController();
 	}
 	
 	/**
@@ -76,8 +73,8 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		Collection<PieceLocationDescriptor> newRedConfiguration = new ArrayList<PieceLocationDescriptor>();
-		Collection<PieceLocationDescriptor> newBlueConfiguration = new ArrayList<PieceLocationDescriptor>();
+		final Collection<PieceLocationDescriptor> newRedConfiguration = new ArrayList<PieceLocationDescriptor>();
+		final Collection<PieceLocationDescriptor> newBlueConfiguration = new ArrayList<PieceLocationDescriptor>();
 		//converting the type of location so that we can use some new functionality
 		for(PieceLocationDescriptor pl: redConfiguration){ 
 			newRedConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));

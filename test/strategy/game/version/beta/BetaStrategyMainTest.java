@@ -1,8 +1,6 @@
 package strategy.game.version.beta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -77,15 +75,10 @@ public class BetaStrategyMainTest {
 
 	@Test
 	public void testGetPieceAtLocationGameNotStarted() throws StrategyException{
-		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
-		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
-		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SPY, PlayerColor.BLUE), new Location2D(0,0)));
-
-		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-
+		StrategyGameController game = createInitialController();
 		assertNull(game.getPieceAt(new Location2D(0,0)));
 	}
-	
+
 	@Test (expected = StrategyException.class)
 	public void testStartGameValidPosition() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
@@ -155,6 +148,7 @@ public class BetaStrategyMainTest {
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, red);
 		game.startGame();
 	}
+
 	@Test
 	public void testStartGameValidPieces() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
@@ -214,14 +208,13 @@ public class BetaStrategyMainTest {
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
 		game.startGame();
 	}
-	
+
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces1() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
 		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(0,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces2() throws StrategyException{
@@ -230,7 +223,6 @@ public class BetaStrategyMainTest {
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(0,5)));
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(1,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces3() throws StrategyException{
@@ -239,7 +231,6 @@ public class BetaStrategyMainTest {
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.MARSHAL, PlayerColor.BLUE), new Location2D(0,5)));
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.MARSHAL, PlayerColor.BLUE), new Location2D(1,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces4() throws StrategyException{
@@ -249,7 +240,6 @@ public class BetaStrategyMainTest {
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL, PlayerColor.BLUE), new Location2D(1,5)));
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.COLONEL, PlayerColor.BLUE), new Location2D(2,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces5() throws StrategyException{
@@ -259,7 +249,6 @@ public class BetaStrategyMainTest {
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN, PlayerColor.BLUE), new Location2D(1,5)));
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.CAPTAIN, PlayerColor.BLUE), new Location2D(2,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces6() throws StrategyException{
@@ -270,7 +259,6 @@ public class BetaStrategyMainTest {
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(2,5)));
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(3,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckNumberOfPieces7() throws StrategyException{
@@ -281,48 +269,83 @@ public class BetaStrategyMainTest {
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT, PlayerColor.BLUE), new Location2D(2,5)));
 		blue.add(new PieceLocationDescriptor(new Piece(PieceType.SERGEANT, PlayerColor.BLUE), new Location2D(3,5)));
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkNumberOfPieces(blue,blue);
 	}
 
-	
-	@Test (expected = StrategyException.class)
-	public void testCheckPiecesOnSide1() throws StrategyException{
-		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
+	@Test
+	public void testCheckPiecesOnSideXOutOfBounds() throws StrategyException{
+		StrategyGameController game = createInitialController();
+
 		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
-		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(0,0)));
-		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
-		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.RED), new Location2D(90,90)));
-		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(blue, blue);
-		((BetaStrategyGameController) game).checkPiecesOnSide(blue,blue);
-		((BetaStrategyGameController) game).checkPiecesOnSide(red,red);
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(-1,4))); // x too small
+		List<PieceLocationDescriptor> blue2 = new ArrayList<PieceLocationDescriptor>();
+		blue2.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(6,4))); // x too big
+
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.BLUE,blue));
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.BLUE,blue2));
 	}
-	@Test (expected = StrategyException.class)
-	public void testCheckPiecesOnSide2() throws StrategyException{
-		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
+	@Test
+	public void testCheckPiecesOnSideBlue() throws StrategyException{
+		StrategyGameController game = createInitialController();
+
+		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+		blue.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(0,3))); //y too small
+		List<PieceLocationDescriptor> blue2 = new ArrayList<PieceLocationDescriptor>();
+		blue2.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.BLUE), new Location2D(0,6))); //y too big
+
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.BLUE,blue));
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.BLUE,blue2));
+	}
+	@Test
+	public void testCheckPiecesOnSideRed() throws StrategyException{
+		StrategyGameController game = createInitialController();
+
 		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
-		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.RED), new Location2D(90,90)));
-		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, red);
-		((BetaStrategyGameController) game).checkPiecesOnSide(red,red);
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.RED), new Location2D(0,2))); //y too big
+		List<PieceLocationDescriptor> red2 = new ArrayList<PieceLocationDescriptor>();
+		red2.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.RED), new Location2D(0,-1))); //y too small
+
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.RED,red));
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.RED,red2));
+	}
+	@Test
+	public void testCheckPiecesOnSideNullArgument() throws StrategyException{
+		StrategyGameController game = createInitialController();
+		assertFalse(((BetaStrategyGameController) game).checkPiecesOnSide(PlayerColor.RED,null));
 	}
 	@Test (expected = StrategyException.class)
 	public void testCheckPiecesOnSide3() throws StrategyException{
-		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
+		StrategyGameController game = createInitialController();
+
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.RED), new Location2D(90,90)));
+
+		((BetaStrategyGameController) game).checkPiecesOnSide(red,red);
+	}
+	@Test (expected = StrategyException.class)
+	public void testCheckPiecesOnSide4() throws StrategyException{
+		StrategyGameController game = createInitialController();
+
 		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
 		red.add(new PieceLocationDescriptor(new Piece(PieceType.FLAG, PlayerColor.RED), new Location2D(3,3)));
-		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, red);
+
 		((BetaStrategyGameController) game).checkPiecesOnSide(red,red);
 	}
 	
-	@Test
-	public void testGetPieceAtEmptyLocation() throws StrategyException{
+
+	@Test (expected = StrategyException.class)
+	public void testCheckPiecesOnSideValidPositionsWrongColor() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
 
-		// Create board with no pieces
-		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
-		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
-		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
+		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
+		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,4));
 
-		assertNull("Expected location to be empty.", game.getPieceAt(new Location2D(0,0)));
+		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
+	}
+
+	@Test
+	public void testGetPieceAtEmptyLocation() throws StrategyException{
+		StrategyGameController game = createInitialController();
+		assertNull("Expected location to be empty.", game.getPieceAt(new Location2D(0,2)));
 	}
 
 	// TODO Test return value!
@@ -430,7 +453,7 @@ public class BetaStrategyMainTest {
 	public void testValidMoveButGameOver() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException, StrategyException{
 		Class<BetaStrategyGameController> gameController = (Class<BetaStrategyGameController>) Class.forName("strategy.game.version.beta.BetaStrategyGameController");
 
-		BetaStrategyGameController game = new BetaStrategyGameController(null, null);
+		BetaStrategyGameController game = (BetaStrategyGameController) createAndStartGame();
 		Field instance = gameController.getDeclaredField("gameOver");
 		instance.setAccessible(true);
 		instance.set(game, true); 
@@ -551,7 +574,7 @@ public class BetaStrategyMainTest {
 		assertNull("Both pieces should have been removed", game.getPieceAt(initLocation));
 		assertNull("Both pieces should have been removed", game.getPieceAt(nextLocation));
 	}
-	
+
 	@Test
 	public void testCombatOutcome() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
@@ -580,7 +603,7 @@ public class BetaStrategyMainTest {
 				PieceType.SERGEANT, PlayerColor.BLUE), new Location2D(4,4)));
 		blue.add(new PieceLocationDescriptor(new Piece(
 				PieceType.SERGEANT, PlayerColor.BLUE), new Location2D(5,4)));
-		
+
 		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.FLAG, PlayerColor.RED), new Location2D(0,0)));
@@ -606,15 +629,15 @@ public class BetaStrategyMainTest {
 				PieceType.SERGEANT, PlayerColor.RED), new Location2D(4,1)));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.SERGEANT, PlayerColor.RED), new Location2D(5,1)));
-		
-		
+
+
 		BetaStrategyGameController game = (BetaStrategyGameController) stratGameFactory.makeBetaStrategyGame(red, blue);
 		game.startGame();
 		assertEquals(StrikeResultBeta.DRAW,game.combatResult(PieceType.MARSHAL,PieceType.MARSHAL));
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,game.combatResult(PieceType.LIEUTENANT,PieceType.SERGEANT));
 		assertEquals(StrikeResultBeta.ATTACKER_LOSES,game.combatResult(PieceType.COLONEL,PieceType.GENERAL));
 		assertEquals(StrikeResultBeta.DRAW,game.combatResult(PieceType.LIEUTENANT,PieceType.LIEUTENANT));
-		
+
 		assertEquals(StrikeResultBeta.ATTACKER_LOSES,
 				game.combatResult(PieceType.MAJOR,PieceType.COLONEL));
 		assertEquals(StrikeResultBeta.ATTACKER_LOSES,
@@ -631,7 +654,7 @@ public class BetaStrategyMainTest {
 				game.combatResult(PieceType.SPY,PieceType.SCOUT));
 		assertEquals(StrikeResultBeta.ATTACKER_LOSES,
 				game.combatResult(PieceType.BOMB,PieceType.SPY));
-		
+
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,
 				game.combatResult(PieceType.COLONEL,PieceType.MAJOR));
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,
@@ -652,7 +675,7 @@ public class BetaStrategyMainTest {
 				game.combatResult(PieceType.SPY,PieceType.MARSHAL));
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,
 				game.combatResult(PieceType.MARSHAL,PieceType.SPY));
-		
+
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,
 				game.combatResult(PieceType.COLONEL,PieceType.FLAG));
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,
@@ -673,16 +696,16 @@ public class BetaStrategyMainTest {
 				game.combatResult(PieceType.SPY,PieceType.FLAG));
 		assertEquals(StrikeResultBeta.ATTACKER_WINS, 
 				game.combatResult(PieceType.MARSHAL,PieceType.FLAG));
-		
+
 	}
-	
+
 	@Test
 	public void testAreEnumsStupidBecauseTheyRequireThisCallToBeMadeForCodeCoverage(){
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,StrikeResultBeta.valueOf("ATTACKER_WINS"));
 	}
-	
+
 	@Test
-	public void testFlagCapture() throws StrategyException{
+	public void testFlagCaptureRedWins() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
 		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
 
@@ -710,7 +733,7 @@ public class BetaStrategyMainTest {
 				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(4,4)));
 		blue.add(new PieceLocationDescriptor(new Piece(
 				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(5,4)));
-		
+
 		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
@@ -736,10 +759,10 @@ public class BetaStrategyMainTest {
 				PieceType.SERGEANT,   PlayerColor.RED), new Location2D(4,1)));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.SERGEANT,   PlayerColor.RED), new Location2D(5,1)));
-		
+
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
 		game.startGame();
-		
+
 
 		// Red moves a Lieutenant
 		Location initLocation = new Location2D(0,1);
@@ -771,7 +794,7 @@ public class BetaStrategyMainTest {
 		MoveResult endgame = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 		assertEquals(MoveResultStatus.RED_WINS,endgame.getStatus());
-		
+
 		// Red attacks blue flag
 		initLocation = new Location2D(1,4);
 		nextLocation = new Location2D(1,3);
@@ -781,7 +804,104 @@ public class BetaStrategyMainTest {
 			assertEquals("The game is over, you cannot make a move",e.getMessage());
 		}
 	}
-	
+
+	@Test
+	public void testFlagCaptureBlueWins() throws StrategyException{
+		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
+		List<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(0,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.MARSHAL,    PlayerColor.BLUE), new Location2D(1,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,    PlayerColor.BLUE), new Location2D(2,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,    PlayerColor.BLUE), new Location2D(3,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,    PlayerColor.BLUE), new Location2D(4,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,    PlayerColor.BLUE), new Location2D(5,5)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.BLUE), new Location2D(0,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(1,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.LIEUTENANT, PlayerColor.BLUE), new Location2D(2,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(3,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(4,4)));
+		blue.add(new PieceLocationDescriptor(new Piece(
+				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(5,4)));
+
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.SERGEANT,       PlayerColor.RED), new Location2D(0,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.MARSHAL,    PlayerColor.RED), new Location2D(1,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,    PlayerColor.RED), new Location2D(2,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,    PlayerColor.RED), new Location2D(3,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,    PlayerColor.RED), new Location2D(4,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,    PlayerColor.RED), new Location2D(5,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(0,1)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(1,1)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.LIEUTENANT, PlayerColor.RED), new Location2D(2,1)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.SERGEANT,   PlayerColor.RED), new Location2D(3,1)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.SERGEANT,   PlayerColor.RED), new Location2D(4,1)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,   PlayerColor.RED), new Location2D(5,1)));
+
+		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
+		game.startGame();
+
+
+		// Red moves a Lieutenant
+		Location initLocation = new Location2D(0,1);
+		Location nextLocation = new Location2D(0,2);
+		Piece redLieutenant = game.getPieceAt(initLocation);
+		assertNotNull(redLieutenant);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves a Sergeant
+		initLocation = new Location2D(5,4);
+		nextLocation = new Location2D(5,3);
+		Piece blueSergeant = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, blueSergeant.getType());
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Red moves again
+		initLocation = new Location2D(0,2);
+		nextLocation = new Location2D(0,3);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue moves again
+		initLocation = new Location2D(5,3);
+		nextLocation = new Location2D(5,2);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Red moves backwards
+		initLocation = new Location2D(0,3);
+		nextLocation = new Location2D(0,2);
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		// Blue captures red flag
+		initLocation = new Location2D(5,2);
+		nextLocation = new Location2D(5,1);
+		MoveResult endgame = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+
+		assertEquals(MoveResultStatus.BLUE_WINS,endgame.getStatus());
+	}
+
 	@Test
 	public void testDrawAfterSixMoves() throws StrategyException{
 		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
@@ -811,7 +931,7 @@ public class BetaStrategyMainTest {
 				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(4,4)));
 		blue.add(new PieceLocationDescriptor(new Piece(
 				PieceType.SERGEANT,   PlayerColor.BLUE), new Location2D(5,4)));
-		
+
 		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
@@ -837,10 +957,10 @@ public class BetaStrategyMainTest {
 				PieceType.SERGEANT,   PlayerColor.RED), new Location2D(4,1)));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.SERGEANT,   PlayerColor.RED), new Location2D(5,1)));
-		
+
 		StrategyGameController game = stratGameFactory.makeBetaStrategyGame(red, blue);
 		game.startGame();
-		
+
 
 		// Red moves a Lieutenant
 		Location initLocation = new Location2D(0,1);
@@ -851,7 +971,7 @@ public class BetaStrategyMainTest {
 		initLocation = new Location2D(5,4);
 		nextLocation = new Location2D(5,3);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-		
+
 		// Red moves a Lieutenant back
 		initLocation = new Location2D(0,2);
 		nextLocation = new Location2D(0,1);
@@ -861,10 +981,10 @@ public class BetaStrategyMainTest {
 		initLocation = new Location2D(5,3);
 		nextLocation = new Location2D(5,4);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-		
-		
-		
-		
+
+
+
+
 		// Red moves a Lieutenant
 		initLocation = new Location2D(0,1);
 		nextLocation = new Location2D(0,2);
@@ -874,7 +994,7 @@ public class BetaStrategyMainTest {
 		initLocation = new Location2D(5,4);
 		nextLocation = new Location2D(5,3);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-		
+
 		// Red moves a Lieutenant back
 		initLocation = new Location2D(0,2);
 		nextLocation = new Location2D(0,1);
@@ -884,9 +1004,9 @@ public class BetaStrategyMainTest {
 		initLocation = new Location2D(5,3);
 		nextLocation = new Location2D(5,4);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-		
-		
-		
+
+
+
 		// Red moves a Lieutenant
 		initLocation = new Location2D(0,1);
 		nextLocation = new Location2D(0,2);
@@ -896,7 +1016,7 @@ public class BetaStrategyMainTest {
 		initLocation = new Location2D(5,4);
 		nextLocation = new Location2D(5,3);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-		
+
 		// Red moves a Lieutenant back
 		initLocation = new Location2D(0,2);
 		nextLocation = new Location2D(0,1);
@@ -907,7 +1027,7 @@ public class BetaStrategyMainTest {
 		nextLocation = new Location2D(5,4);
 		MoveResult endgame = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
-		
+
 		assertEquals(MoveResultStatus.DRAW,endgame.getStatus());
 		try{
 			game.move(game.getPieceAt(new Location2D(0,1)).getType(), new Location2D(0,1), new Location2D(0,2));

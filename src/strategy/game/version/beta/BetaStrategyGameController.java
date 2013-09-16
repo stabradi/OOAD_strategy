@@ -43,18 +43,20 @@ public class BetaStrategyGameController implements StrategyGameController {
 	/**
 	 * @param redConfiguration Initial configuration of the red player's pieces
 	 * @param blueConfiguration Initial configuration of the blue player's pieces
+	 * @throws StrategyException 
 	 */
-	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration){
+	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException{
 		redInitialConfiguration = redConfiguration;
 		blueInitialConfiguration = blueConfiguration;
 		currentConfiguration = null;
 		gameOver = false;
-	}
-	@Override
-	public void startGame() throws StrategyException {
+		gameStarted = false;
+		
 		checkNumberOfPieces(redInitialConfiguration,blueInitialConfiguration);
 		checkPiecesOnSide(redInitialConfiguration,blueInitialConfiguration);
-		
+	}
+	@Override
+	public void startGame() {
 		currentConfiguration = new ArrayList<PieceLocationDescriptor>();
 		currentConfiguration.addAll(redInitialConfiguration);
 		currentConfiguration.addAll(blueInitialConfiguration);
@@ -138,6 +140,9 @@ public class BetaStrategyGameController implements StrategyGameController {
 				return false;
 			}
 			if((PlayerColor.RED == color) && ((y < 0) || (y > 1))){
+				return false;
+			}
+			if(pl.getPiece().getOwner() != color){
 				return false;
 			}
 		}
@@ -281,10 +286,10 @@ public class BetaStrategyGameController implements StrategyGameController {
 			return 3;
 		}else if(piece==PieceType.BOMB){
 			return 2;
-		}else if(piece==PieceType.FLAG){
+		}else{ //if(piece==PieceType.FLAG){
 			return 1;
 		} 
-		return 0;
+		//return 0;
 	}
 	
 	/*

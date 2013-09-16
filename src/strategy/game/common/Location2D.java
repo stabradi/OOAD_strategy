@@ -10,8 +10,6 @@
 
 package strategy.game.common;
 
-import strategy.game.common.*;
-
 /**
  * Description
  * @author gpollice
@@ -22,6 +20,11 @@ public class Location2D implements Location
 	private final int xCoordinate;
 	private final int yCoordinate;
 	
+	/**
+	 * Constructor for Location2D.
+	 * @param xCoordinate int
+	 * @param yCoordinate int
+	 */
 	public Location2D(int xCoordinate, int yCoordinate) {
 		this.xCoordinate = xCoordinate;
 		this.yCoordinate = yCoordinate;

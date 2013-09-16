@@ -10,11 +10,23 @@
 
 package strategy.game.version.alpha;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import strategy.common.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import strategy.common.PlayerColor;
+import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
-import strategy.game.common.*;
+import strategy.game.StrategyGameFactory;
+import strategy.game.common.Location;
+import strategy.game.common.Location2D;
+import strategy.game.common.MoveResult;
+import strategy.game.common.MoveResultStatus;
+import strategy.game.common.Piece;
+import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.common.PieceType;
 
 /**
  * Description
@@ -36,7 +48,7 @@ public class AlphaStrategyMasterTest
 	@Before
 	public  void setup()
 	{
-		game = new AlphaStrategyGameController();
+		game = StrategyGameFactory.getInstance().makeAlphaStrategyGame();
 	}
 	
 	@Test(expected=StrategyException.class)

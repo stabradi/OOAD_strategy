@@ -4,14 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import strategy.common.StrategyException;
 import strategy.game.common.Location;
 import strategy.game.common.Location2D;
 
 public class BetaLocation2DTest {
 	@Test
-	public void testDistanceTo(){
-		BetaStrategyGameController game = new BetaStrategyGameController(null, null);
-
+	public void testDistanceTo() throws StrategyException{
 		Location loc_0_0 = new BetaLocation2D(new Location2D(0,0));
 		Location loc_0_1 = new BetaLocation2D(new Location2D(0,1));
 		Location loc_1_0 = new BetaLocation2D(new Location2D(1,0));
