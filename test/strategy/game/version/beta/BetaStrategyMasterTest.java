@@ -320,6 +320,7 @@ public class BetaStrategyMasterTest
 		game.move(SERGEANT, loc24, loc23);
 		final MoveResult moveResult = game.move(LIEUTENANT, loc22, loc23);
 		assertEquals(OK, moveResult.getStatus());
+		System.out.println("BattleWinner: " + moveResult.getBattleWinner().getLocation());
 		assertEquals(
 				new PieceLocationDescriptor(new Piece(LIEUTENANT, RED), loc23),
 				moveResult.getBattleWinner());

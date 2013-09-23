@@ -102,13 +102,19 @@ public class GammaMovementRules implements MovementRules {
 				}
 			}
 			else{
-				result = new MoveResult(MoveResultStatus.OK, attacker);
+				configuration.remove(defender);
+				configuration.remove(attacker);
+				PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
+				configuration.add(newAttacker);
+				result = new MoveResult(MoveResultStatus.OK, newAttacker);
 			}
 		}
 		else{ // Attacker loses
+			configuration.remove(defender);
 			configuration.remove(attacker);
-			normalMove(configuration, defender, attacker.getLocation());
-			result = new MoveResult(MoveResultStatus.OK, defender);
+			PieceLocationDescriptor newDefender = new PieceLocationDescriptor(defender.getPiece(), attacker.getLocation());
+			configuration.add(newDefender);
+			result = new MoveResult(MoveResultStatus.OK, newDefender);
 		}
 		return result;
 	}
