@@ -18,7 +18,7 @@ public class GammaMovementRules implements MovementRules {
 	int moveCounter;
 
 	public GammaMovementRules(){
-		moveCounter = 0;
+		moveCounter = 1;
 	}
 
 	public MoveResult move(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
@@ -38,7 +38,8 @@ public class GammaMovementRules implements MovementRules {
 		if((moveCounter >= 12) && moveResult.getStatus() == MoveResultStatus.OK){
 			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
 		}
-		return null;
+		moveCounter++;
+		return moveResult;
 	}
 
 	public void validateMove(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,

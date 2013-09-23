@@ -96,7 +96,12 @@ public class UniversalStrategyGameController implements StrategyGameController {
 			throw new StrategyException("Cannot move piece: It is not the piece owner's turn!");
 		}
 		MoveResult moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
-		nextTurn();
+		if((moveResult.getStatus() == MoveResultStatus.RED_WINS) || (moveResult.getStatus() == MoveResultStatus.BLUE_WINS) || (moveResult.getStatus() == MoveResultStatus.DRAW)){
+			gameOver = true;
+		}
+		else{
+			nextTurn();
+		}
 		return moveResult;
 	}
 	
