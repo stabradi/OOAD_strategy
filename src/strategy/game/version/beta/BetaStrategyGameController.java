@@ -20,10 +20,10 @@ import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
 import strategy.game.common.MoveResultStatus;
-import strategy.game.common.MovementRules;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
+import strategy.game.version.MovementRules;
 
 /**
  * The BetaStrategyGameController implements the game core for

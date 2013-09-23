@@ -29,7 +29,8 @@ public enum PieceType
 	SCOUT("Scout", "sct"),
 	SPY("Spy", "spy"),
 	BOMB("Bomb", "b"),
-	FLAG("Flag", "f");
+	FLAG("Flag", "f"),
+	CHOKE_POINT("Choke Point","CP");
 	
 	private final String printableName;
 	private final String symbol;

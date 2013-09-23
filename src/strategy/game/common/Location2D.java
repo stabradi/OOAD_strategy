@@ -10,6 +10,8 @@
 
 package strategy.game.common;
 
+import strategy.common.StrategyRuntimeException;
+
 /**
  * Description
  * @author gpollice
@@ -40,9 +42,17 @@ public class Location2D implements Location
 	@Override
 	public int distanceTo(Location otherLocation)
 	{
-		return 0;
+		final int otherX =
+				otherLocation.getCoordinate(Coordinate.X_COORDINATE);
+		final int otherY =
+				otherLocation.getCoordinate(Coordinate.Y_COORDINATE);
+		if (xCoordinate != otherX && yCoordinate != otherY) {
+			throw new StrategyRuntimeException(
+					"Coordinates are not on same row or column");
+		}
+		return xCoordinate == otherX ? Math.abs(yCoordinate-otherY) : Math.abs(xCoordinate - otherX);
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (other == this) return true;

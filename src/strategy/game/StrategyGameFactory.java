@@ -14,13 +14,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import strategy.common.StrategyException;
-import strategy.game.common.MovementRules;
 import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.version.MovementRules;
+import strategy.game.version.PlacementRules;
+import strategy.game.version.UniversalStrategyGameController;
 import strategy.game.version.alpha.AlphaStrategyGameController;
 import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.BetaMovementRules;
 import strategy.game.version.beta.BetaStrategyGameController;
 import strategy.game.version.gamma.GammaMovementRules;
+import strategy.game.version.gamma.GammaPlacementRules;
 
 /**
  * <p>
@@ -76,7 +79,17 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		return makeStrategyGame(redConfiguration, blueConfiguration, new BetaMovementRules());
+		if(redConfiguration == null || blueConfiguration == null) throw new StrategyException("Cannot create Beta Strategy with Null Configurations");
+		final Collection<PieceLocationDescriptor> newRedConfiguration = new ArrayList<PieceLocationDescriptor>();
+		final Collection<PieceLocationDescriptor> newBlueConfiguration = new ArrayList<PieceLocationDescriptor>();
+		//converting the type of location so that we can use some new functionality
+		for(PieceLocationDescriptor pl: redConfiguration){ 
+			newRedConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
+		}
+		for(PieceLocationDescriptor pl: blueConfiguration){ 
+			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
+		}
+		return new BetaStrategyGameController(newRedConfiguration,newBlueConfiguration,new BetaMovementRules());
 	}
 	
 	/**
@@ -91,12 +104,12 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules(), new GammaPlacementRules());
 	}
 	
 	private StrategyGameController makeStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
-			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules)
+			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules, PlacementRules placementRules)
 		throws StrategyException
 	{	
 		if(redConfiguration == null || blueConfiguration == null) throw new StrategyException("Cannot create Beta Strategy with Null Configurations");
@@ -109,6 +122,6 @@ public class StrategyGameFactory
 		for(PieceLocationDescriptor pl: blueConfiguration){ 
 			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
 		}
-		return new BetaStrategyGameController(newRedConfiguration,newBlueConfiguration, movementRules);
+		return new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, movementRules, placementRules);
 	}
 }

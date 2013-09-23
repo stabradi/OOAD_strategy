@@ -2,17 +2,22 @@ package strategy.game.version.beta;
 
 import java.util.Collection;
 
-import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
-import strategy.game.common.MovementRules;
+import strategy.game.common.MoveResult;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
+import strategy.game.version.MovementRules;
 
 public class BetaMovementRules implements MovementRules {
-	@Override
+	public MoveResult move(Collection<PieceLocationDescriptor> configuration,
+			PieceLocationDescriptor pl, Location from, Location to)
+			throws StrategyException{
+		return null;
+	}
+	
 	public void validateMove(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
 			PieceLocationDescriptor pl, Location from, Location to)
 			throws StrategyException {
