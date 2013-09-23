@@ -20,6 +20,7 @@ import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
 import strategy.game.common.MoveResultStatus;
+import strategy.game.common.MovementRules;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
@@ -39,6 +40,8 @@ public class BetaStrategyGameController implements StrategyGameController {
 	private boolean gameOver;
 	private boolean gameStarted;
 	private int moveCounter;
+	
+	private MovementRules movementRules;
 
 	/**
 	 * @param redConfiguration Initial configuration of the red player's pieces
@@ -46,15 +49,21 @@ public class BetaStrategyGameController implements StrategyGameController {
 	 * @throws StrategyException 
 	 */
 	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException{
+		this(redConfiguration, blueConfiguration, new BetaMovementRules());
+	}
+	
+	public BetaStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules) throws StrategyException{
 		redInitialConfiguration = redConfiguration;
 		blueInitialConfiguration = blueConfiguration;
 		currentConfiguration = null;
+		this.movementRules = movementRules;
 		gameOver = false;
 		gameStarted = false;
 		
 		checkNumberOfPieces(redInitialConfiguration,blueInitialConfiguration);
 		checkPiecesOnSide(redInitialConfiguration,blueInitialConfiguration);
 	}
+	
 	@Override
 	public void startGame() {
 		currentConfiguration = new ArrayList<PieceLocationDescriptor>();
@@ -162,9 +171,16 @@ public class BetaStrategyGameController implements StrategyGameController {
 		
 		final Location betaFrom = new BetaLocation2D(from);
 		final Location betaTo = new BetaLocation2D(to);
-		
 		final PieceLocationDescriptor fromPl = getPlDescriptorAt(betaFrom);
-		validateMove(fromPl, betaFrom, betaTo);
+		
+		if(fromPl == null){
+			throw new StrategyException("Cannot move piece: There is no piece on that space!");
+		}
+		if(currentTurn != fromPl.getPiece().getOwner()){
+			throw new StrategyException("Cannot move piece: It is not the piece owner's turn!");
+		}
+		
+		movementRules.validateMove(this, currentConfiguration, fromPl, betaFrom, betaTo);
 		
 		// Check for a strike
 		final PieceLocationDescriptor toPl = getPlDescriptorAt(betaTo);
@@ -293,30 +309,6 @@ public class BetaStrategyGameController implements StrategyGameController {
 	}
 	
 	/*
-	 * This method determines whether or not a move is valid, and throws an exception if not
-	 */
-	private void validateMove(PieceLocationDescriptor pl, Location from, Location to) throws StrategyException{
-		if(pl == null){
-			throw new StrategyException("Cannot move piece: There is no piece on that space!");
-		}
-		if(currentTurn != pl.getPiece().getOwner()){
-			throw new StrategyException("Cannot move piece: It is not the piece owner's turn!");
-		}
-		if(!locationIsOnBoard(to)){
-			throw new StrategyException("Cannot move piece off of board");
-		}
-		if((getPieceAt(to) != null) && (getPieceAt(to).getOwner() == currentTurn)){
-			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
-		}
-		if(from.distanceTo(to) != 1){
-			throw new StrategyException("Must move piece exactly one space orthogonally");
-		}
-		if(pl.getPiece().getType() == PieceType.FLAG){
-			throw new StrategyException("Cannot move the flag!");
-		}
-	}
-	
-	/*
 	 * This method returns the piece on the game board that is associated with the
 	 * specified location, or null if there is none
 	 */
@@ -343,14 +335,5 @@ public class BetaStrategyGameController implements StrategyGameController {
 			}
 		}
 		return null;
-	}
-
-	/*
-	 * Verifies that a position is in fact on the board
-	 */
-	private boolean locationIsOnBoard(Location to){
-		final int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
-		final int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
-		return ((xcoord >= 0) && (ycoord >= 0) && (xcoord <= 5) && (ycoord <= 5));
 	}
 }

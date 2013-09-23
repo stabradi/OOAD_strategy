@@ -14,10 +14,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import strategy.common.StrategyException;
+import strategy.game.common.MovementRules;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.version.alpha.AlphaStrategyGameController;
 import strategy.game.version.beta.BetaLocation2D;
+import strategy.game.version.beta.BetaMovementRules;
 import strategy.game.version.beta.BetaStrategyGameController;
+import strategy.game.version.gamma.GammaMovementRules;
 
 /**
  * <p>
@@ -73,6 +76,29 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
+		return makeStrategyGame(redConfiguration, blueConfiguration, new BetaMovementRules());
+	}
+	
+	/**
+	 * Create a new Gamma Strategy game given the 
+	 * @param redConfiguration the initial starting configuration for the RED pieces
+	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
+	 * @return the Beta Strategy game instance with the initial configuration of pieces
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
+	 */
+	public StrategyGameController makeGammaStrategyGame(
+			Collection<PieceLocationDescriptor> redConfiguration,
+			Collection<PieceLocationDescriptor> blueConfiguration)
+		throws StrategyException
+	{	
+		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules());
+	}
+	
+	private StrategyGameController makeStrategyGame(
+			Collection<PieceLocationDescriptor> redConfiguration,
+			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules)
+		throws StrategyException
+	{	
 		if(redConfiguration == null || blueConfiguration == null) throw new StrategyException("Cannot create Beta Strategy with Null Configurations");
 		final Collection<PieceLocationDescriptor> newRedConfiguration = new ArrayList<PieceLocationDescriptor>();
 		final Collection<PieceLocationDescriptor> newBlueConfiguration = new ArrayList<PieceLocationDescriptor>();
@@ -83,8 +109,6 @@ public class StrategyGameFactory
 		for(PieceLocationDescriptor pl: blueConfiguration){ 
 			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
 		}
-		return new BetaStrategyGameController(newRedConfiguration,newBlueConfiguration);
+		return new BetaStrategyGameController(newRedConfiguration,newBlueConfiguration, movementRules);
 	}
-	
-
 }
