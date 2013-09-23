@@ -3,6 +3,7 @@ package strategy.game.version;
 import java.util.Collection;
 
 import strategy.common.StrategyException;
+import strategy.game.StrategyGameController;
 import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
 import strategy.game.common.PieceLocationDescriptor;
@@ -17,7 +18,7 @@ public interface MovementRules {
 	 * @param from The source location
 	 * @param to The destination location
 	 */
-	public MoveResult move(Collection<PieceLocationDescriptor> configuration,
+	public MoveResult move(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
 			PieceLocationDescriptor pl, Location from, Location to)
 			throws StrategyException;
 }
