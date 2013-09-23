@@ -15,6 +15,8 @@ public class GammaPlacementRules implements PlacementRules {
 	public void validatePlacement(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException {
 		checkNumberOfPieces(redConfiguration,blueConfiguration);
 		checkPiecesOnSide(redConfiguration,blueConfiguration);
+		checkNoOverlappingPieces(redConfiguration);
+		checkNoOverlappingPieces(blueConfiguration);
 	}
 
 	/**
@@ -69,6 +71,17 @@ public class GammaPlacementRules implements PlacementRules {
 	protected void checkPiecesOnSide(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
 		if(!(checkPiecesOnSide(PlayerColor.RED,config1)&&checkPiecesOnSide(PlayerColor.BLUE,config2))){
 			throw new StrategyException("pieces not in valid positions");
+		}
+	}
+	
+	
+	protected void checkNoOverlappingPieces(Collection<PieceLocationDescriptor> config) throws StrategyException{
+		//I know this is not terribly efficient, but it is very simple
+		for(PieceLocationDescriptor pl: config){
+			for(PieceLocationDescriptor pl2: config){
+				if(pl.getLocation().distanceTo(pl2.getLocation()) == 0 && pl != pl2) throw new StrategyException("overlapping pieces");
+			}
+			
 		}
 	}
 	

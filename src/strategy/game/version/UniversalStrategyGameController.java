@@ -63,7 +63,8 @@ public class UniversalStrategyGameController implements StrategyGameController {
 	}
 	
 	@Override
-	public void startGame() {
+	public void startGame() throws StrategyException{
+		if(gameOver||gameStarted)throw new StrategyException("game over or started");
 		currentConfiguration = new ArrayList<PieceLocationDescriptor>();
 		currentConfiguration.addAll(redInitialConfiguration);
 		currentConfiguration.addAll(blueInitialConfiguration);
