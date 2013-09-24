@@ -1,5 +1,6 @@
 package strategy.game.version.gamma;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import strategy.common.PlayerColor;
@@ -39,6 +40,23 @@ public class GammaMovementRules implements MovementRules {
 			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
 		}
 		moveCounter++;
+		
+		Collection<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		Collection<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+		for(PieceLocationDescriptor plSplitting: configuration){
+			if(plSplitting.getPiece().getOwner() == PlayerColor.RED)red.add(plSplitting);
+			if(plSplitting.getPiece().getOwner() == PlayerColor.BLUE)blue.add(plSplitting);
+		}
+		boolean canRedNotMove = hasNoMovablePieces(red);
+		boolean canBlueNotMove = hasNoMovablePieces(blue);
+		if(canRedNotMove&&canBlueNotMove){
+			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
+		}else if(canRedNotMove){
+			moveResult = new MoveResult(MoveResultStatus.BLUE_WINS, moveResult.getBattleWinner());
+		}else if(canBlueNotMove){
+			moveResult = new MoveResult(MoveResultStatus.RED_WINS, moveResult.getBattleWinner());
+		}
+
 		return moveResult;
 	}
 
@@ -48,7 +66,7 @@ public class GammaMovementRules implements MovementRules {
 		if(!locationIsOnBoard(to)){
 			throw new StrategyException("Cannot move piece off of board");
 		}
-		if((controller.getPieceAt(to) != null) && (controller.getPieceAt(to).getOwner() == pl.getPiece().getOwner())){
+		if((controller != null) && (controller.getPieceAt(to) != null) && (controller.getPieceAt(to).getOwner() == pl.getPiece().getOwner())){
 			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
 		}
 		if(from.distanceTo(to) != 1){
@@ -179,5 +197,14 @@ public class GammaMovementRules implements MovementRules {
 			}
 		}
 		return null;
+	}
+	
+	
+	protected boolean hasNoMovablePieces(Collection<PieceLocationDescriptor> config){
+		boolean movablePieces = false;
+		for(PieceLocationDescriptor pl: config){
+			movablePieces = movablePieces || (( pl.getPiece().getType() != PieceType.FLAG) && (pl.getPiece().getType() != PieceType.BOMB));
+		}
+		return !movablePieces;
 	}
 }

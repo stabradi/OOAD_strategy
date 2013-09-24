@@ -87,7 +87,7 @@ public class GammaStrategyMainTest {
 	}
 	
 	@Test (expected = StrategyException.class)
-	public void testMoveIntoChokePoint(){
+	public void testMoveIntoChokePoint() throws StrategyException{
 		StrategyGameController game = createAndStartGame();
 	}
 
@@ -944,5 +944,90 @@ public class GammaStrategyMainTest {
 		}catch(StrategyException e){
 			assertEquals("The game is over, you cannot make a move",e.getMessage());
 		}
+	}
+	
+	
+	
+	@Test
+	public void testNoMovablePieces(){//expect draw when all of the pieces have been killed
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
+		assertEquals(true,(new GammaMovementRules()).hasNoMovablePieces(red));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.MARSHAL,    PlayerColor.RED), new Location2D(1,0)));
+		assertEquals(false,(new GammaMovementRules()).hasNoMovablePieces(red));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,    PlayerColor.RED), new Location2D(2,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,    PlayerColor.RED), new Location2D(3,0)));
+		
+		assertEquals(false,(new GammaMovementRules()).hasNoMovablePieces(red));
+	}
+	
+	@Test
+	public void testBattleEndsWithoutMovablePieces() throws StrategyException{//expect draw when all of the pieces have been killed
+		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.BOMB,       PlayerColor.RED), new Location2D(1,0)));
+		
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.BLUE), new Location2D(5,5)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,       PlayerColor.BLUE), new Location2D(1,1)));
+		
+		
+		MoveResult endgame = (new GammaMovementRules()).move(null, red, new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN, PlayerColor.BLUE),new Location2D(1,1)), new Location2D(1,1), new Location2D(1,0));
+		
+		assertEquals(MoveResultStatus.DRAW,endgame.getStatus());
+		
+		
+		
+		
+		
+		red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.BOMB,       PlayerColor.RED), new Location2D(1,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,       PlayerColor.RED), new Location2D(2,0)));
+		
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.BLUE), new Location2D(5,5)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,       PlayerColor.BLUE), new Location2D(1,1)));
+		endgame = (new GammaMovementRules()).move(null, red, new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN, PlayerColor.BLUE),new Location2D(1,1)), new Location2D(1,1), new Location2D(1,0));
+		
+		assertEquals(MoveResultStatus.RED_WINS,endgame.getStatus());
+		
+		
+		
+		
+		
+		
+		
+		
+		red = new ArrayList<PieceLocationDescriptor>();
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.BLUE), new Location2D(0,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.BOMB,       PlayerColor.BLUE), new Location2D(1,0)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.COLONEL,       PlayerColor.BLUE), new Location2D(2,0)));
+		
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.FLAG,       PlayerColor.RED), new Location2D(5,5)));
+		red.add(new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN,       PlayerColor.RED), new Location2D(1,1)));
+		endgame = (new GammaMovementRules()).move(null, red, new PieceLocationDescriptor(new Piece(
+				PieceType.CAPTAIN, PlayerColor.RED),new Location2D(1,1)), new Location2D(1,1), new Location2D(1,0));
+		
+		assertEquals(MoveResultStatus.BLUE_WINS,endgame.getStatus());
+		
 	}
 }
