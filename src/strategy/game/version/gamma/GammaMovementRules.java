@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
-import strategy.common.StrategyRuntimeException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
@@ -15,13 +14,24 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.MovementRules;
+import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.StrikeResultBeta;
 
 public class GammaMovementRules implements MovementRules {
-	int moveCounter;
-
+	private Location redMostRecentFrom;
+	private Location blueMostRecentFrom;
+	private Location redMostRecentTo;
+	private Location blueMostRecentTo;
+	private int redRepeatCount;
+	private int blueRepeatCount;
+	
 	public GammaMovementRules(){
-		moveCounter = 1;
+		Location redMostRecentLocation = null;
+		Location blueMostRecentLocation = null;
+		Location redMostRecentTo = null;
+		Location blueMostRecentTo = null;
+		redRepeatCount = 0;
+		blueRepeatCount = 0;
 	}
 
 	public MoveResult move(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
@@ -38,10 +48,6 @@ public class GammaMovementRules implements MovementRules {
 		else{
 			moveResult = normalMove(configuration, pl, to);
 		}
-		if((moveCounter >= 12) && moveResult.getStatus() == MoveResultStatus.OK){
-			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
-		}
-		moveCounter++;
 		
 		Collection<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
 		Collection<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
@@ -62,23 +68,18 @@ public class GammaMovementRules implements MovementRules {
 		return moveResult;
 	}
 
-	public void validateMove(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
+	private void validateMove(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
 			PieceLocationDescriptor pl, Location from, Location to)
 					throws StrategyException {
 		if(!locationIsOnBoard(to)){
 			throw new StrategyException("Cannot move piece off of board");
 		}
-//<<<<<<<
-//		if((controller != null) && (controller.getPieceAt(to) != null) && (controller.getPieceAt(to).getOwner() == pl.getPiece().getOwner())){
-//			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
-//=======
 		if((controller != null)){
 			Piece toPiece = controller.getPieceAt(to);
 			if(controller.getPieceAt(to) != null){
 				if(toPiece.getOwner() == pl.getPiece().getOwner()){
 					throw new StrategyException("Cannot move piece into another piece belonging to the same player");
 				}
-	//>>>>>>> b62521df5f07b6cd267d9cda0f7defd81a91e5af
 			}
 		}
 		if(from.distanceTo(to) != 1){
@@ -91,8 +92,54 @@ public class GammaMovementRules implements MovementRules {
 		int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
 		if(((xcoord == 2) || (xcoord == 3)) &&
 			((ycoord == 2) || (ycoord == 3))){
-				System.out.println("coords: " + xcoord+ " " + ycoord);
 				throw new StrategyException("Cannot move into lake!");
+		}
+		validateAndUpdateRepeats(pl, from, to);
+	}
+	
+	private void validateAndUpdateRepeats(PieceLocationDescriptor pl, Location from, Location to) throws StrategyException{
+		Location mostRecentFrom;
+		Location mostRecentTo;
+		int repeatCount;
+		if(pl.getPiece().getOwner() == PlayerColor.RED){
+			System.out.println("red");
+			mostRecentFrom = redMostRecentFrom;
+			mostRecentTo = redMostRecentTo;
+			repeatCount = redRepeatCount;
+		}
+		else{ // blue
+			System.out.println("blue");
+			mostRecentFrom = blueMostRecentFrom;
+			mostRecentTo = blueMostRecentTo;
+			repeatCount = blueRepeatCount;
+		}
+		
+		System.out.println(mostRecentFrom);
+		System.out.println(mostRecentTo);
+		System.out.println(from);
+		System.out.println(to);
+		
+		if(to.equals(mostRecentFrom) && from.equals(mostRecentTo)){ // opposite of current move
+			if(repeatCount >= 1){ // Already moved back once, now repeating the movement, which is illegal
+				throw new StrategyException("Error: Move repetition rule violation");
+			}
+			else{
+				repeatCount++;
+			}
+		}
+		else{ // No repetition yet
+			repeatCount = 0;
+		}
+		// put back stuff
+		if(pl.getPiece().getOwner() == PlayerColor.RED){
+			redRepeatCount = repeatCount;
+			redMostRecentFrom = new BetaLocation2D(from);
+			redMostRecentTo = new BetaLocation2D(to);
+		}
+		else{ // blue
+			blueRepeatCount = repeatCount;
+			blueMostRecentFrom = new BetaLocation2D(from);
+			blueMostRecentTo = new BetaLocation2D(to);
 		}
 	}
 
