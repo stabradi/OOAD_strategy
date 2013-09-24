@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
 package strategy.game.version.gamma;
 
 import java.util.ArrayList;
@@ -17,6 +27,11 @@ import strategy.game.version.MovementRules;
 import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.StrikeResultBeta;
 
+/**
+ * Movement Rules implementation for a Gamma Strategy Game
+ * @author cpnota
+ * @version September 24, 2013
+ */
 public class GammaMovementRules implements MovementRules {
 	private Location redMostRecentFrom;
 	private Location blueMostRecentFrom;
@@ -26,10 +41,10 @@ public class GammaMovementRules implements MovementRules {
 	private int blueRepeatCount;
 	
 	public GammaMovementRules(){
-		Location redMostRecentLocation = null;
-		Location blueMostRecentLocation = null;
-		Location redMostRecentTo = null;
-		Location blueMostRecentTo = null;
+		final Location redMostRecentLocation = null;
+		final Location blueMostRecentLocation = null;
+		final Location redMostRecentTo = null;
+		final Location blueMostRecentTo = null;
 		redRepeatCount = 0;
 		blueRepeatCount = 0;
 	}
@@ -49,14 +64,14 @@ public class GammaMovementRules implements MovementRules {
 			moveResult = normalMove(configuration, pl, to);
 		}
 		
-		Collection<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
-		Collection<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
+		final Collection<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
+		final Collection<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
 		for(PieceLocationDescriptor plSplitting: configuration){
 			if(plSplitting.getPiece().getOwner() == PlayerColor.RED)red.add(plSplitting);
 			if(plSplitting.getPiece().getOwner() == PlayerColor.BLUE)blue.add(plSplitting);
 		}
-		boolean canRedNotMove = hasNoMovablePieces(red);
-		boolean canBlueNotMove = hasNoMovablePieces(blue);
+		final boolean canRedNotMove = hasNoMovablePieces(red);
+		final boolean canBlueNotMove = hasNoMovablePieces(blue);
 		if(canRedNotMove&&canBlueNotMove){
 			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
 		}else if(canRedNotMove){
@@ -75,7 +90,7 @@ public class GammaMovementRules implements MovementRules {
 			throw new StrategyException("Cannot move piece off of board");
 		}
 		if((controller != null)){
-			Piece toPiece = controller.getPieceAt(to);
+			final Piece toPiece = controller.getPieceAt(to);
 			if(controller.getPieceAt(to) != null){
 				if(toPiece.getOwner() == pl.getPiece().getOwner()){
 					throw new StrategyException("Cannot move piece into another piece belonging to the same player");
@@ -88,8 +103,8 @@ public class GammaMovementRules implements MovementRules {
 		if(pl.getPiece().getType() == PieceType.FLAG){
 			throw new StrategyException("Cannot move the flag!");
 		}
-		int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
-		int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
+		final int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
+		final int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
 		if(((xcoord == 2) || (xcoord == 3)) &&
 			((ycoord == 2) || (ycoord == 3))){
 				throw new StrategyException("Cannot move into lake!");
@@ -188,7 +203,7 @@ public class GammaMovementRules implements MovementRules {
 			else{
 				configuration.remove(defender);
 				configuration.remove(attacker);
-				PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
+				final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
 				configuration.add(newAttacker);
 				result = new MoveResult(MoveResultStatus.OK, newAttacker);
 			}
@@ -196,7 +211,7 @@ public class GammaMovementRules implements MovementRules {
 		else{ // Attacker loses
 			configuration.remove(defender);
 			configuration.remove(attacker);
-			PieceLocationDescriptor newDefender = new PieceLocationDescriptor(defender.getPiece(), attacker.getLocation());
+			final PieceLocationDescriptor newDefender = new PieceLocationDescriptor(defender.getPiece(), attacker.getLocation());
 			configuration.add(newDefender);
 			result = new MoveResult(MoveResultStatus.OK, newDefender);
 		}
@@ -265,7 +280,11 @@ public class GammaMovementRules implements MovementRules {
 		return null;
 	}
 	
-	
+	/**
+	 * Determines whether or not a given configuration contains any moveable pieces.
+	 * @param config The configuration to search
+	 * @return a boolean of whether or not there are movable pieces
+	 */
 	protected boolean hasNoMovablePieces(Collection<PieceLocationDescriptor> config){
 		boolean movablePieces = false;
 		for(PieceLocationDescriptor pl: config){

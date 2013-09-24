@@ -43,8 +43,16 @@ public class UniversalStrategyGameController implements StrategyGameController {
 	private boolean gameOver;
 	private boolean gameStarted;
 	
-	private MovementRules movementRules;
+	private final MovementRules movementRules;
 
+	/**
+	 * @param redConfiguration Configuration of red pieces
+	 * @param blueConfiguration Configuration of blue pieces
+	 * @param boardConfiguration Configuration of other board pieces (ie, if lakes were implemented as pieces)
+	 * @param movementRules Rules that govern the movement of the pieces
+	 * @param placementRules Rules that govern the placement of the pieces
+	 * @throws StrategyException if the Initial configuration is invalid
+	 */
 	public UniversalStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, 
 			Collection<PieceLocationDescriptor> blueConfiguration, 
 			Collection<PieceLocationDescriptor> boardConfiguration, 
@@ -99,7 +107,7 @@ public class UniversalStrategyGameController implements StrategyGameController {
 		if(piece != fromPl.getPiece().getType()){
 			throw new StrategyException("Cannot move piece: That piece is not at that location!");
 		}
-		MoveResult moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
+		final MoveResult moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
 		if((moveResult.getStatus() == MoveResultStatus.RED_WINS) || (moveResult.getStatus() == MoveResultStatus.BLUE_WINS) || (moveResult.getStatus() == MoveResultStatus.DRAW)){
 			gameOver = true;
 		}
