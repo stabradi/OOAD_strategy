@@ -117,22 +117,15 @@ public class GammaMovementRules implements MovementRules {
 		Location mostRecentTo;
 		int repeatCount;
 		if(pl.getPiece().getOwner() == PlayerColor.RED){
-			System.out.println("red");
 			mostRecentFrom = redMostRecentFrom;
 			mostRecentTo = redMostRecentTo;
 			repeatCount = redRepeatCount;
 		}
 		else{ // blue
-			System.out.println("blue");
 			mostRecentFrom = blueMostRecentFrom;
 			mostRecentTo = blueMostRecentTo;
 			repeatCount = blueRepeatCount;
 		}
-		
-		System.out.println(mostRecentFrom);
-		System.out.println(mostRecentTo);
-		System.out.println(from);
-		System.out.println(to);
 		
 		if(to.equals(mostRecentFrom) && from.equals(mostRecentTo)){ // opposite of current move
 			if(repeatCount >= 1){ // Already moved back once, now repeating the movement, which is illegal
