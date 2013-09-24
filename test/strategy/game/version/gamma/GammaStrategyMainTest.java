@@ -1,7 +1,6 @@
 package strategy.game.version.gamma;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -24,8 +23,7 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.UniversalStrategyGameController;
-import strategy.game.version.beta.BetaMovementRules;
-import strategy.game.version.beta.BetaPlacementRules;
+import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.StrikeResultBeta;
 
 public class GammaStrategyMainTest {
@@ -72,6 +70,7 @@ public class GammaStrategyMainTest {
 		List<PieceLocationDescriptor> config = new ArrayList<PieceLocationDescriptor>();
 		for(int y = 0, count = 0; y < 2; y++){
 			for(int x = 0; x < 6; x++, count++){
+				System.out.println("Piece: " + pieces.get(count) + " x: " + (x+startingX) + " y: " + (y+startingY));
 				config.add(new PieceLocationDescriptor(pieces.get(count), new Location2D(x + startingX, y + startingY)));
 			}
 		}
@@ -87,8 +86,83 @@ public class GammaStrategyMainTest {
 	}
 	
 	@Test (expected = StrategyException.class)
-	public void testMoveIntoChokePoint(){
+	public void testStartGameTwice() throws StrategyException{
 		StrategyGameController game = createAndStartGame();
+		game.startGame();
+	}
+	
+	@Test (expected = StrategyException.class)
+	public void testMoveIntoChokePoint22() throws StrategyException{
+		StrategyGameController game = createAndStartGame();
+		
+		// Red moves a Lieutenant safely
+		Location initLocation = new Location2D(2,1);
+		Location nextLocation = new Location2D(2,2);
+		Piece piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, piece.getType());
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+	}
+	
+	@Test (expected = StrategyException.class)
+	public void testMoveIntoChokePoint32() throws StrategyException{
+		StrategyGameController game = createAndStartGame();
+		
+		// Red moves a COLONEL into choke point at 3,2
+		Location initLocation = new Location2D(3,1);
+		Location nextLocation = new Location2D(3,2);
+		Piece piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.COLONEL, piece.getType());
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+	}
+	
+	@Test (expected = StrategyException.class)
+	public void testMoveIntoChokePoint23() throws StrategyException{
+		StrategyGameController game = createAndStartGame();
+		
+		// Red moves validly
+		Location initLocation = new Location2D(5,1);
+		Location nextLocation = new Location2D(5,2);
+		Piece piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, piece.getType());
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		// Blue moves into choke point
+		initLocation = new Location2D(2,4);
+		nextLocation = new Location2D(2,3);
+		piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.COLONEL, piece.getType());
+		game.move(piece.getType(), initLocation, nextLocation);
+	}
+	
+	@Test (expected = StrategyException.class)
+	public void testMoveIntoChokePoint33() throws StrategyException{
+		StrategyGameController game = createAndStartGame();
+		
+		// Red moves validly
+		Location initLocation = new Location2D(5,1);
+		Location nextLocation = new Location2D(5,2);
+		Piece piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, piece.getType());
+		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		// Blue moves into choke point
+		initLocation = new Location2D(3,4);
+		nextLocation = new Location2D(3,3);
+		piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.CAPTAIN, piece.getType());
+		game.move(piece.getType(), initLocation, nextLocation);
+	}
+	
+	@Test (expected = StrategyException.class)
+	public void testMovePieceNotAtLocation() throws StrategyException{
+		StrategyGameController game = createAndStartGame();
+		
+		// Red moves validly but wrong piece type
+		Location initLocation = new Location2D(5,1);
+		Location nextLocation = new Location2D(5,2);
+		Piece piece = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, piece.getType());
+		game.move(PieceType.SPY, initLocation, nextLocation);
 	}
 
 	@Test (expected = StrategyException.class)
@@ -457,36 +531,27 @@ public class GammaStrategyMainTest {
 	public void testValidStrikeAttackerWins() throws StrategyException{
 		StrategyGameController game = createAndStartGame();
 
-		// Red moves a Colonel
-		Location initLocation = new Location2D(3,1);
-		Location nextLocation = new Location2D(3,2);
+		// Red moves a Lieutenant
+		Location initLocation = new Location2D(1,1);
+		Location nextLocation = new Location2D(1,2);
 		Piece redColonel = game.getPieceAt(initLocation);
-		assertEquals(PieceType.COLONEL, redColonel.getType());
+		assertEquals(PieceType.LIEUTENANT, redColonel.getType());
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
-		// Blue moves a Lieutenant
-		initLocation = new Location2D(5,4);
-		nextLocation = new Location2D(5,3);
+		// Blue moves a sergeant
+		initLocation = new Location2D(1,4);
+		nextLocation = new Location2D(1,3);
 		Piece blueLieutenant = game.getPieceAt(initLocation);
-		assertEquals(PieceType.LIEUTENANT, blueLieutenant.getType());
-		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-
-		// Red moves again
-		initLocation = new Location2D(3,2);
-		nextLocation = new Location2D(3,3);
-		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
-
-		// Blue moves next to red
-		initLocation = new Location2D(5,3);
-		nextLocation = new Location2D(4,3);
+		assertEquals(PieceType.SERGEANT, blueLieutenant.getType());
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 		// Red attacks
-		initLocation = new Location2D(3,3);
-		nextLocation = new Location2D(4,3);
-		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		initLocation = new Location2D(1,2);
+		nextLocation = new Location2D(1,3);
+		MoveResult result = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 		// Red wins the strike, and moves into blue's former position
+		assertEquals(result.getBattleWinner(), new PieceLocationDescriptor(new Piece(PieceType.LIEUTENANT, PlayerColor.RED), nextLocation));
 		assertEquals("Winning piece did not move onto losing piece's position", redColonel, game.getPieceAt(nextLocation));
 		assertNull("Winning piece still at original location", game.getPieceAt(initLocation));
 	}
@@ -494,12 +559,12 @@ public class GammaStrategyMainTest {
 	@Test
 	public void testValidStrikeDraw() throws StrategyException{
 		StrategyGameController game = createAndStartGame();
-
-		// Red moves a Lieutenant
-		Location initLocation = new Location2D(1,1);
-		Location nextLocation = new Location2D(1,2);
-		Piece redLieutenant = game.getPieceAt(initLocation);
-		assertEquals(PieceType.LIEUTENANT, redLieutenant.getType());
+		// Red Sergeant at 5,1 to blue at 5,5
+		// Red moves a Sergeant
+		Location initLocation = new Location2D(5,1);
+		Location nextLocation = new Location2D(5,2);
+		Piece redSergeant = game.getPieceAt(initLocation);
+		assertEquals(PieceType.SERGEANT, redSergeant.getType());
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 		// Blue moves a Lieutenant
@@ -509,30 +574,30 @@ public class GammaStrategyMainTest {
 		assertEquals(PieceType.LIEUTENANT, blueLieutenant.getType());
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
-		// Red moves again
-		initLocation = new Location2D(1,2);
-		nextLocation = new Location2D(1,3);
+		// Red another piece
+		initLocation = new Location2D(5,0);
+		nextLocation = new Location2D(5,1);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
-		// Blue moves
+		// Blue moves lieutenant out of way
 		initLocation = new Location2D(5,3);
 		nextLocation = new Location2D(4,3);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
-		// Red moves
-		initLocation = new Location2D(1,3);
-		nextLocation = new Location2D(2,3);
+		// Red moves forward with sergeant
+		initLocation = new Location2D(5,2);
+		nextLocation = new Location2D(5,3);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
-		// Blue moves
-		initLocation = new Location2D(4,3);
-		nextLocation = new Location2D(3,3);
+		// Blue moves forward with sergeant
+		initLocation = new Location2D(5,5);
+		nextLocation = new Location2D(5,4);
 		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 		// Red attacks
-		initLocation = new Location2D(2,3);
-		nextLocation = new Location2D(3,3);
-		game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		initLocation = new Location2D(5,3);
+		nextLocation = new Location2D(5,4);
+		MoveResult result = game.move(game.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 		// Both pieces removed from the bored
 		assertNull("Both pieces should have been removed", game.getPieceAt(initLocation));
