@@ -1,4 +1,4 @@
-package strategy.game.version.gamma;
+package strategy.game.version.beta;
 
 import java.util.Collection;
 
@@ -9,7 +9,7 @@ import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.PlacementRules;
 
-public class GammaPlacementRules implements PlacementRules {
+public class BetaPlacementRules implements PlacementRules {
 
 	@Override
 	public void validatePlacement(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException {
