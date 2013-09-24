@@ -5,11 +5,13 @@ import java.util.Collection;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
+import strategy.common.StrategyRuntimeException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
 import strategy.game.common.MoveResultStatus;
+import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.MovementRules;
@@ -66,14 +68,31 @@ public class GammaMovementRules implements MovementRules {
 		if(!locationIsOnBoard(to)){
 			throw new StrategyException("Cannot move piece off of board");
 		}
-		if((controller != null) && (controller.getPieceAt(to) != null) && (controller.getPieceAt(to).getOwner() == pl.getPiece().getOwner())){
-			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
+//<<<<<<<
+//		if((controller != null) && (controller.getPieceAt(to) != null) && (controller.getPieceAt(to).getOwner() == pl.getPiece().getOwner())){
+//			throw new StrategyException("Cannot move piece into another piece belonging to the same player");
+//=======
+		if((controller != null)){
+			Piece toPiece = controller.getPieceAt(to);
+			if(controller.getPieceAt(to) != null){
+				if(toPiece.getOwner() == pl.getPiece().getOwner()){
+					throw new StrategyException("Cannot move piece into another piece belonging to the same player");
+				}
+	//>>>>>>> b62521df5f07b6cd267d9cda0f7defd81a91e5af
+			}
 		}
 		if(from.distanceTo(to) != 1){
 			throw new StrategyException("Must move piece exactly one space orthogonally");
 		}
 		if(pl.getPiece().getType() == PieceType.FLAG){
 			throw new StrategyException("Cannot move the flag!");
+		}
+		int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
+		int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
+		if(((xcoord == 2) || (xcoord == 3)) &&
+			((ycoord == 2) || (ycoord == 3))){
+				System.out.println("coords: " + xcoord+ " " + ycoord);
+				throw new StrategyException("Cannot move into lake!");
 		}
 	}
 
