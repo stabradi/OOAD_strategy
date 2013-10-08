@@ -33,17 +33,24 @@ import strategy.game.version.beta.StrikeResultBeta;
  * @version Sep 13, 2013
  */
 public class UniversalStrategyGameController implements StrategyGameController {
-	final private Collection<PieceLocationDescriptor> redInitialConfiguration;
-	final private Collection<PieceLocationDescriptor> blueInitialConfiguration;
-	final private Collection<PieceLocationDescriptor> boardInitialConfiguration;
+	private final Collection<PieceLocationDescriptor> redInitialConfiguration;
+	private final Collection<PieceLocationDescriptor> blueInitialConfiguration;
+	private final Collection<PieceLocationDescriptor> boardInitialConfiguration;
 	
-	private Collection<PieceLocationDescriptor> currentConfiguration;
+	protected Collection<PieceLocationDescriptor> currentConfiguration;
 	
-	private PlayerColor currentTurn; // the player whose turn it currently is
-	private boolean gameOver;
-	private boolean gameStarted;
+	protected PlayerColor currentTurn; // the player whose turn it currently is
+	protected boolean gameOver;
+	protected boolean gameStarted;
 	
 	private final MovementRules movementRules;
+	
+	public UniversalStrategyGameController(){
+		redInitialConfiguration = null;
+		blueInitialConfiguration = null;
+		boardInitialConfiguration = null;
+		movementRules = null;
+	}
 
 	/**
 	 * @param redConfiguration Configuration of red pieces

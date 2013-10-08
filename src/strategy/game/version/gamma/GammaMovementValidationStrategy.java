@@ -12,23 +12,14 @@ import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.MovementValidationStrategy;
 import strategy.game.version.beta.BetaLocation2D;
+import strategy.game.version.common.RepeatMovementValidationStrategy;
 
 public class GammaMovementValidationStrategy implements
 		MovementValidationStrategy {
-	private Location redMostRecentFrom;
-	private Location blueMostRecentFrom;
-	private Location redMostRecentTo;
-	private Location blueMostRecentTo;
-	private int redRepeatCount;
-	private int blueRepeatCount;
+	private RepeatMovementValidationStrategy repeatMovementValidationStrategy;
 
 	public GammaMovementValidationStrategy(){
-		final Location redMostRecentLocation = null;
-		final Location blueMostRecentLocation = null;
-		final Location redMostRecentTo = null;
-		final Location blueMostRecentTo = null;
-		redRepeatCount = 0;
-		blueRepeatCount = 0;
+		repeatMovementValidationStrategy = createRepeatMovementValidationStrategy();
 	}
 	
 	@Override
@@ -58,46 +49,7 @@ public class GammaMovementValidationStrategy implements
 			((ycoord == 2) || (ycoord == 3))){
 				throw new StrategyException("Cannot move into lake!");
 		}
-		validateAndUpdateRepeats(pl, from, to);
-	}
-	
-	private void validateAndUpdateRepeats(PieceLocationDescriptor pl, Location from, Location to) throws StrategyException{
-		Location mostRecentFrom;
-		Location mostRecentTo;
-		int repeatCount;
-		if(pl.getPiece().getOwner() == PlayerColor.RED){
-			mostRecentFrom = redMostRecentFrom;
-			mostRecentTo = redMostRecentTo;
-			repeatCount = redRepeatCount;
-		}
-		else{ // blue
-			mostRecentFrom = blueMostRecentFrom;
-			mostRecentTo = blueMostRecentTo;
-			repeatCount = blueRepeatCount;
-		}
-		
-		if(to.equals(mostRecentFrom) && from.equals(mostRecentTo)){ // opposite of current move
-			if(repeatCount >= 1){ // Already moved back once, now repeating the movement, which is illegal
-				throw new StrategyException("Error: Move repetition rule violation");
-			}
-			else{
-				repeatCount++;
-			}
-		}
-		else{ // No repetition yet
-			repeatCount = 0;
-		}
-		// put back stuff
-		if(pl.getPiece().getOwner() == PlayerColor.RED){
-			redRepeatCount = repeatCount;
-			redMostRecentFrom = new BetaLocation2D(from);
-			redMostRecentTo = new BetaLocation2D(to);
-		}
-		else{ // blue
-			blueRepeatCount = repeatCount;
-			blueMostRecentFrom = new BetaLocation2D(from);
-			blueMostRecentTo = new BetaLocation2D(to);
-		}
+		repeatMovementValidationStrategy.validateMove(controller, configuration, pl, from, to);
 	}
 	
 	/*
@@ -107,5 +59,13 @@ public class GammaMovementValidationStrategy implements
 		final int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
 		final int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
 		return ((xcoord >= 0) && (ycoord >= 0) && (xcoord <= 5) && (ycoord <= 5));
+	}
+	
+	/**
+	 * Creates a RepeatMovementValidationStrategy
+	 * @return a new RepeatMovementValidationStrategy
+	 */
+	protected RepeatMovementValidationStrategy createRepeatMovementValidationStrategy() {
+		return new RepeatMovementValidationStrategy();
 	}
 }
