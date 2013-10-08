@@ -7,6 +7,7 @@ import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
+import strategy.game.common.Location2D;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
@@ -46,25 +47,87 @@ public class DeltaMovementValidationStrategy implements
 				}
 			}
 		}
-		//TODO scouts, bombs
-		/*
-		if(from.distanceTo(to) != 1){
-			throw new StrategyException("Must move piece exactly one space orthogonally");
+
+		if(pl.getPiece().getType() != PieceType.BOMB){
+			throw new StrategyException("Can't move bombs!");
 		}
-		*/
+		else if(pl.getPiece().getType() != PieceType.SCOUT){
+			this.validateScoutMovement(controller, configuration, pl, from, to);
+		}
+		else{
+			if(from.distanceTo(to) != 1){
+				throw new StrategyException("Must move piece exactly one space orthogonally");
+			}
+
+		}
 		if(pl.getPiece().getType() == PieceType.FLAG){
 			throw new StrategyException("Cannot move the flag!");
 		}
 		final int xcoord = to.getCoordinate(Coordinate.X_COORDINATE);
 		final int ycoord = to.getCoordinate(Coordinate.Y_COORDINATE);
-		// TODO LAKES
-		/*
 		if(((xcoord == 2) || (xcoord == 3)) &&
-			((ycoord == 2) || (ycoord == 3))){
+			((ycoord == 4) || (ycoord == 5))){
 				throw new StrategyException("Cannot move into lake!");
 		}
-		*/
+		if(((xcoord == 6) || (xcoord == 7)) &&
+			((ycoord == 4) || (ycoord == 5))){
+				throw new StrategyException("Cannot move into lake!");
+		}
 		validateAndUpdateRepeats(pl, from, to);
+	}
+	
+	void validateScoutMovement(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
+			PieceLocationDescriptor pl, Location from, Location to) throws StrategyException{
+		int fromx = from.getCoordinate(Coordinate.X_COORDINATE);
+		int fromy = from.getCoordinate(Coordinate.Y_COORDINATE);
+		int tox = to.getCoordinate(Coordinate.X_COORDINATE);
+		int toy = to.getCoordinate(Coordinate.Y_COORDINATE);
+		
+		int sharedLineNumber; // Value of the x or y coordinate
+		int fromvar; // Value of the from coordinate that the scout is moving along
+		int tovar; // Value of the from coordinate that the scout is moving along
+		boolean horizontal; // 0 if vertical
+		
+		if(fromx == tox){ // move vertically
+			horizontal = false;
+			sharedLineNumber = fromx;
+			fromvar = fromy;
+			tovar = toy;
+		}
+		else if(fromy != toy){ // move horizontally
+			horizontal = true;
+			sharedLineNumber = fromy;
+			fromvar = fromx;
+			tovar = tox;
+		}
+		else{
+			throw new StrategyException("Scout can only move in straight lines!");
+		}
+		
+		// Determine whether the scout is moving in the positive or negative direction
+		int sign;
+		if(fromvar < tovar){
+			sign = 1;
+		}
+		else if(fromvar > tovar){
+			sign = -1;
+		}
+		else{
+			throw new StrategyException("Scout cannot move 0 spaces!");
+		}
+		// Move along each space and make sure it is not occupied
+		for(int i = fromvar + sign; (tovar-i)*sign != 0; i+=sign){ // increment in correct direction until distance between two locations is zero, then break
+			Location2D checkLocation;
+			if(horizontal){
+				checkLocation = new Location2D(i, sharedLineNumber);
+			}
+			else{
+				checkLocation = new Location2D(sharedLineNumber, i);
+			}
+			if(controller.getPieceAt(checkLocation) != null){
+				throw new StrategyException("Scout cannot move through pieces!");
+			}
+		}
 	}
 	
 	private void validateAndUpdateRepeats(PieceLocationDescriptor pl, Location from, Location to) throws StrategyException{
