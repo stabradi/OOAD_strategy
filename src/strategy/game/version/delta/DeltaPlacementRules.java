@@ -1,13 +1,4 @@
-/*******************************************************************************
- * This files was developed for CS4233: Object-Oriented Analysis & Design.
- * The course was taken at Worcester Polytechnic Institute.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *******************************************************************************/
-package strategy.game.version.beta;
+package strategy.game.version.delta;
 
 import java.util.Collection;
 
@@ -18,11 +9,8 @@ import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.PlacementRules;
 
-/**
- * @author stabradi and cpnota
- * @version $Revision: 1.0 $
- */
-public class BetaPlacementRules implements PlacementRules {
+public class DeltaPlacementRules implements PlacementRules {
+
 
 	@Override
 	public void validatePlacement(Collection<PieceLocationDescriptor> redConfiguration, Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException {
@@ -49,12 +37,20 @@ public class BetaPlacementRules implements PlacementRules {
 	 * @return number code indicating in what way the number of pieces is wrong,
 	 *  or 0 if it is not wrong, this is nicer than a boolean for debugging */
 	protected int checkNumberOfPieces(Collection<PieceLocationDescriptor> config){
-		int flag = 1;
 		int marshal = 1;
+		int general = 1;//
 		int colonels = 2;
-		int captains = 2;
-		int lieutanants = 3;
-		int sergeant = 3;
+		int majors = 3;//
+		int captains = 4;
+		int lieutanants = 4;
+		int sergeant = 4;
+		int miners = 5;//
+		int scouts = 8;//
+		int spys = 1;//
+		int bombs = 8;//
+		int flag = 1;
+		
+		
 		
 		for(PieceLocationDescriptor pl: config){
 			if(pl.getPiece().getType()==PieceType.FLAG){
@@ -69,6 +65,18 @@ public class BetaPlacementRules implements PlacementRules {
 				if((--lieutanants)<0)return -5;
 			}else if(pl.getPiece().getType()==PieceType.SERGEANT){
 				if((--sergeant)<0)return -6;
+			}else if(pl.getPiece().getType()==PieceType.GENERAL){
+				if((--general)<0)return -7;
+			}else if(pl.getPiece().getType()==PieceType.MAJOR){
+				if((--majors)<0)return -8;
+			}else if(pl.getPiece().getType()==PieceType.MINER){
+				if((--miners)<0)return -9;
+			}else if(pl.getPiece().getType()==PieceType.SCOUT){
+				if((--scouts)<0)return -10;
+			}else if(pl.getPiece().getType()==PieceType.SPY){
+				if((--spys)<0)return -11;
+			}else if(pl.getPiece().getType()==PieceType.BOMB){
+				if((--bombs)<0)return -12;
 			}else{
 				return -1;
 			}
@@ -115,11 +123,11 @@ public class BetaPlacementRules implements PlacementRules {
 		for(PieceLocationDescriptor pl: config){
 			x = pl.getLocation().getCoordinate(Coordinate.X_COORDINATE);
 			y = pl.getLocation().getCoordinate(Coordinate.Y_COORDINATE);//PlayerColor.BLUE
-			if((x < 0) || (x > 5)) return false;
-			if((PlayerColor.BLUE == color) && ((y < 4) || (y > 5))){
+			if((x < 0) || (x > 9)) return false;
+			if((PlayerColor.BLUE == color) && ((y < 6) || (y > 9))){
 				return false;
 			}
-			if((PlayerColor.RED == color) && ((y < 0) || (y > 1))){
+			if((PlayerColor.RED == color) && ((y < 0) || (y > 3))){
 				return false;
 			}
 			if(pl.getPiece().getOwner() != color){
@@ -128,4 +136,5 @@ public class BetaPlacementRules implements PlacementRules {
 		}
 		return true;
 	}
+
 }
