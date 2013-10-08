@@ -88,9 +88,12 @@ public class GammaMovementRules implements MovementRules {
 	/*
 	 * Helper for move(), updates the configurations for moves involving strikes
 	 */
-	private MoveResult strikeMove(Collection<PieceLocationDescriptor> configuration, PieceLocationDescriptor attacker, PieceLocationDescriptor defender){
+	private MoveResult strikeMove(Collection<PieceLocationDescriptor> configuration, PieceLocationDescriptor attacker, PieceLocationDescriptor defender) throws StrategyException{
 		final MoveResult result;
 		final StrikeResultBeta strikeResult = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
+		if(attacker.getLocation().distanceTo(defender.getLocation()) != 1){
+			throw new StrategyException("Cannot strike from more than one space away!");
+		}
 		if(strikeResult == StrikeResultBeta.DRAW){
 			configuration.remove(defender);
 			configuration.remove(attacker);
