@@ -23,6 +23,7 @@ import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.BetaMovementRules;
 import strategy.game.version.beta.BetaPlacementRules;
 import strategy.game.version.gamma.GammaMovementRules;
+import strategy.game.version.gamma.GammaMovementValidationStrategy;
 
 /**
  * <p>
@@ -93,7 +94,14 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules(), new BetaPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules(new GammaMovementValidationStrategy()), new BetaPlacementRules());
+	}
+	
+	public StrategyGameController makeDeltaStrategyGame(
+			Collection<PieceLocationDescriptor> redConfiguration,
+			Collection<PieceLocationDescriptor> blueConfiguration)
+	{
+		return null;//makeStrategyGame(redConfiguration, blueConfiguration, new DeltaMovementRules(), new DeltaPlacementRules());
 	}
 	
 	private StrategyGameController makeStrategyGame(

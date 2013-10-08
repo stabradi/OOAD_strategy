@@ -609,7 +609,7 @@ public class GammaStrategyMainTest {
 
 	@Test
 	public void testCombatOutcome() throws StrategyException{
-		GammaMovementRules movementRules = new GammaMovementRules();
+		GammaMovementRules movementRules = new GammaMovementRules(new GammaMovementValidationStrategy());
 		
 		assertEquals(StrikeResultBeta.DRAW,movementRules.combatResult(PieceType.MARSHAL,PieceType.MARSHAL));
 		assertEquals(StrikeResultBeta.ATTACKER_WINS,movementRules.combatResult(PieceType.LIEUTENANT,PieceType.SERGEANT));
@@ -885,16 +885,16 @@ public class GammaStrategyMainTest {
 		List<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.FLAG,       PlayerColor.RED), new Location2D(0,0)));
-		assertEquals(true,(new GammaMovementRules()).hasNoMovablePieces(red));
+		assertEquals(true,(new GammaMovementRules(new GammaMovementValidationStrategy())).hasNoMovablePieces(red));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.MARSHAL,    PlayerColor.RED), new Location2D(1,0)));
-		assertEquals(false,(new GammaMovementRules()).hasNoMovablePieces(red));
+		assertEquals(false,(new GammaMovementRules(new GammaMovementValidationStrategy())).hasNoMovablePieces(red));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.COLONEL,    PlayerColor.RED), new Location2D(2,0)));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.COLONEL,    PlayerColor.RED), new Location2D(3,0)));
 		
-		assertEquals(false,(new GammaMovementRules()).hasNoMovablePieces(red));
+		assertEquals(false,(new GammaMovementRules(new GammaMovementValidationStrategy())).hasNoMovablePieces(red));
 	}
 	
 	@Test
@@ -911,7 +911,7 @@ public class GammaStrategyMainTest {
 				PieceType.CAPTAIN,       PlayerColor.BLUE), new Location2D(1,1)));
 		
 		
-		MoveResult endgame = (new GammaMovementRules()).move(null, red, new PieceLocationDescriptor(new Piece(
+		MoveResult endgame = (new GammaMovementRules(new GammaMovementValidationStrategy())).move(null, red, new PieceLocationDescriptor(new Piece(
 				PieceType.CAPTAIN, PlayerColor.BLUE),new Location2D(1,1)), new Location2D(1,1), new Location2D(1,0));
 		
 		assertEquals(MoveResultStatus.DRAW,endgame.getStatus());
@@ -932,7 +932,7 @@ public class GammaStrategyMainTest {
 				PieceType.FLAG,       PlayerColor.BLUE), new Location2D(5,5)));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.CAPTAIN,       PlayerColor.BLUE), new Location2D(1,1)));
-		endgame = (new GammaMovementRules()).move(null, red, new PieceLocationDescriptor(new Piece(
+		endgame = (new GammaMovementRules(new GammaMovementValidationStrategy())).move(null, red, new PieceLocationDescriptor(new Piece(
 				PieceType.CAPTAIN, PlayerColor.BLUE),new Location2D(1,1)), new Location2D(1,1), new Location2D(1,0));
 		
 		assertEquals(MoveResultStatus.RED_WINS,endgame.getStatus());
@@ -956,7 +956,7 @@ public class GammaStrategyMainTest {
 				PieceType.FLAG,       PlayerColor.RED), new Location2D(5,5)));
 		red.add(new PieceLocationDescriptor(new Piece(
 				PieceType.CAPTAIN,       PlayerColor.RED), new Location2D(1,1)));
-		endgame = (new GammaMovementRules()).move(null, red, new PieceLocationDescriptor(new Piece(
+		endgame = (new GammaMovementRules(new GammaMovementValidationStrategy())).move(null, red, new PieceLocationDescriptor(new Piece(
 				PieceType.CAPTAIN, PlayerColor.RED),new Location2D(1,1)), new Location2D(1,1), new Location2D(1,0));
 		
 		assertEquals(MoveResultStatus.BLUE_WINS,endgame.getStatus());

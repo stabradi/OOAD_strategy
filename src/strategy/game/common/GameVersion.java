@@ -18,5 +18,5 @@ package strategy.game.common;
  */
 public enum GameVersion
 {
-	ALPHA, BETA, GAMMA;
+	ALPHA, BETA, GAMMA, DELTA;
 }
