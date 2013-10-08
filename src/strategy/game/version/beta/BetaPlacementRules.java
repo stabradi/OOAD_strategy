@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
 package strategy.game.version.beta;
 
 import java.util.Collection;
@@ -9,6 +18,10 @@ import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.PlacementRules;
 
+/**
+ * @author stabradi and cpnota
+ * @version $Revision: 1.0 $
+ */
 public class BetaPlacementRules implements PlacementRules {
 
 	@Override
@@ -22,8 +35,8 @@ public class BetaPlacementRules implements PlacementRules {
 	/**
 	 * @param config1 first set of pieces to check for correct pieces
 	 * @param config2 second set of pieces to check for correct pieces
-	 * @throws StrategyException if the types of any of the pieces are wrong
-	 */
+	
+	 * @throws StrategyException if the types of any of the pieces are wrong */
 	protected void checkNumberOfPieces(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
 		if(!(checkNumberOfPieces(config1)==0 && checkNumberOfPieces(config2)==0)){
 			throw new StrategyException("incorrect number of pieces"+checkNumberOfPieces(config1)+"|"+checkNumberOfPieces(config2));
@@ -32,9 +45,9 @@ public class BetaPlacementRules implements PlacementRules {
 	
 	/**
 	 * @param config the set of pieces to check for correct pieces
+	
 	 * @return number code indicating in what way the number of pieces is wrong,
-	 *  or 0 if it is not wrong, this is nicer than a boolean for debugging
-	 */
+	 *  or 0 if it is not wrong, this is nicer than a boolean for debugging */
 	protected int checkNumberOfPieces(Collection<PieceLocationDescriptor> config){
 		int flag = 1;
 		int marshal = 1;
@@ -66,8 +79,8 @@ public class BetaPlacementRules implements PlacementRules {
 	/**
 	 * @param config1 first set of pieces to check for correct placement
 	 * @param config2 second set of pieces to check for correct placement
-	 * @throws StrategyException if the placements are wrong
-	 */
+	
+	 * @throws StrategyException if the placements are wrong */
 	protected void checkPiecesOnSide(Collection<PieceLocationDescriptor> config1, Collection<PieceLocationDescriptor> config2) throws StrategyException{
 		if(!(checkPiecesOnSide(PlayerColor.RED,config1)&&checkPiecesOnSide(PlayerColor.BLUE,config2))){
 			throw new StrategyException("pieces not in valid positions");
@@ -75,6 +88,11 @@ public class BetaPlacementRules implements PlacementRules {
 	}
 	
 	
+	/**
+	 * Method checkNoOverlappingPieces.
+	 * @param config Collection<PieceLocationDescriptor>
+	
+	 * @throws StrategyException */
 	protected void checkNoOverlappingPieces(Collection<PieceLocationDescriptor> config) throws StrategyException{
 		//I know this is not terribly efficient, but it is very simple
 		for(PieceLocationDescriptor pl: config){
@@ -88,8 +106,8 @@ public class BetaPlacementRules implements PlacementRules {
 	/**
 	 * @param color the color of the pieces being evaluated
 	 * @param config second set of pieces to check for correct placement
-	 * @return indication of there being any pieces not on their own side
-	 */
+	
+	 * @return indication of there being any pieces not on their own side */
 	protected boolean checkPiecesOnSide(PlayerColor color,Collection<PieceLocationDescriptor> config){
 		int x;
 		int y;

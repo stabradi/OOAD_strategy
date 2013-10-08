@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
 package strategy.game.version.beta;
 
 import java.util.Collection;
@@ -13,9 +22,18 @@ import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.MovementRules;
 
+/**
+ * 
+ * @author stabradi and cpnota
+ *
+ * @version 9/15/2013
+ */
 public class BetaMovementRules implements MovementRules {
 	int moveCounter;
 
+	/**
+	 * Constructor for BetaMovementRules.
+	 */
 	public BetaMovementRules(){
 		moveCounter = 1;
 	}
@@ -41,6 +59,15 @@ public class BetaMovementRules implements MovementRules {
 		return moveResult;
 	}
 
+	/**
+	 * Method validateMove.
+	 * @param controller which is used when finding other locations on the board
+	 * @param configuration the set of pieces used
+	 * @param pl piece being moved
+	 * @param from the initial location of the moving piece
+	 * @param to the final location of the moving piece
+	
+	 * @throws StrategyException */
 	public void validateMove(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
 			PieceLocationDescriptor pl, Location from, Location to)
 					throws StrategyException {
@@ -103,7 +130,7 @@ public class BetaMovementRules implements MovementRules {
 			else{
 				configuration.remove(defender);
 				configuration.remove(attacker);
-				PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
+				final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
 				configuration.add(newAttacker);
 				result = new MoveResult(MoveResultStatus.OK, newAttacker);
 			}
@@ -111,7 +138,7 @@ public class BetaMovementRules implements MovementRules {
 		else{ // Attacker loses
 			configuration.remove(defender);
 			configuration.remove(attacker);
-			PieceLocationDescriptor newDefender = new PieceLocationDescriptor(defender.getPiece(), attacker.getLocation());
+			final PieceLocationDescriptor newDefender = new PieceLocationDescriptor(defender.getPiece(), attacker.getLocation());
 			configuration.add(newDefender);
 			result = new MoveResult(MoveResultStatus.OK, newDefender);
 		}
@@ -122,8 +149,8 @@ public class BetaMovementRules implements MovementRules {
 	 * 
 	 * @param attacker the piece attacking
 	 * @param defender the piece defending
-	 * @return who won the combat
-	 */
+	 * @return who won the combat  
+	 * */
 	protected StrikeResultBeta combatResult(PieceType attacker, PieceType defender){
 		if(attacker!=PieceType.MINER && defender==PieceType.BOMB) return StrikeResultBeta.ATTACKER_LOSES;
 		if(attacker==PieceType.SPY && defender==PieceType.MARSHAL) return StrikeResultBeta.ATTACKER_WINS;
@@ -166,8 +193,8 @@ public class BetaMovementRules implements MovementRules {
 	 * or null if there is none.
 	 * @param location Location to look for an associated PieceLocationDescriptor
 	 * @param config Configuration to search for with given Location
-	 * @return A PieceLocationDescriptor with the given Location or null if there is none
-	 */
+	 * @return A PieceLocationDescriptor with the given Location or null if there is none 
+	 * */
 	protected PieceLocationDescriptor getPlDescriptorAtFromConfig(Location location, Collection<PieceLocationDescriptor> config){
 		Location plLoc = null;
 		for(PieceLocationDescriptor pl: config){

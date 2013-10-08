@@ -24,7 +24,6 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.beta.BetaLocation2D;
-import strategy.game.version.beta.StrikeResultBeta;
 
 /**
  * The BetaStrategyGameController implements the game core for

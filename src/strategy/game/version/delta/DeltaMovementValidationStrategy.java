@@ -47,7 +47,7 @@ public class DeltaMovementValidationStrategy implements
 			}
 		}
 		//TODO scouts, bombs
-		/ * 
+		/*
 		if(from.distanceTo(to) != 1){
 			throw new StrategyException("Must move piece exactly one space orthogonally");
 		}
