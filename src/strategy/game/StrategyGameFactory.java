@@ -22,6 +22,8 @@ import strategy.game.version.alpha.AlphaStrategyGameController;
 import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.BetaMovementRules;
 import strategy.game.version.beta.BetaPlacementRules;
+import strategy.game.version.delta.DeltaMovementValidationStrategy;
+import strategy.game.version.delta.DeltaPlacementRules;
 import strategy.game.version.gamma.GammaMovementRules;
 import strategy.game.version.gamma.GammaMovementValidationStrategy;
 
@@ -97,11 +99,18 @@ public class StrategyGameFactory
 		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules(new GammaMovementValidationStrategy()), new BetaPlacementRules());
 	}
 	
+	/**
+	 * Create a new Delta Strategy game given the 
+	 * @param redConfiguration the initial starting configuration for the RED pieces
+	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
+	 * @return the Delta Strategy game instance with the initial configuration of pieces
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
+	 */
 	public StrategyGameController makeDeltaStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
-			Collection<PieceLocationDescriptor> blueConfiguration)
+			Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException
 	{
-		return null;//makeStrategyGame(redConfiguration, blueConfiguration, new DeltaMovementRules(), new DeltaPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new GammaMovementRules(new DeltaMovementValidationStrategy()), new DeltaPlacementRules());
 	}
 	
 	private StrategyGameController makeStrategyGame(

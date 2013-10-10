@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
+import strategy.game.StrategyGameController;
+import strategy.game.StrategyGameFactory;
 import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.Location2D;
@@ -15,10 +17,8 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.beta.BetaLocation2D;
-import strategy.game.version.delta.DeltaPlacementRules;
 
 public class DeltaStrategyMainTest {
-	
 	// Adds all pieces for one Beta strategy player, filling in the spaces sequentially
 	public List<PieceLocationDescriptor> createPlayerInitialConfiguration(PlayerColor player, Location start){
 		int startingX = start.getCoordinate(Coordinate.X_COORDINATE);
@@ -47,6 +47,20 @@ public class DeltaStrategyMainTest {
 		}
 
 		return config;
+	}
+	
+	@Test
+	public void testMoveAPiece()throws StrategyException{
+		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
+		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
+		
+		StrategyGameController controller = StrategyGameFactory.getInstance().makeDeltaStrategyGame(red, blue);
+		
+		controller.startGame();
+		
+		Location2D from = new Location2D(0,3);
+		Location2D to = new Location2D(0,4);
+		controller.move(controller.getPieceAt(from).getType(), from, to);
 	}
 	
 	@Test

@@ -36,6 +36,10 @@ import strategy.game.version.beta.StrikeResultBeta;
 public class GammaMovementRules implements MovementRules {	
 	MovementValidationStrategy movementValidationStrategy;
 	
+	/**
+	 * Constructor for Gamma Movement Rules
+	 * @param movementValidationStrategy
+	 */
 	public GammaMovementRules(MovementValidationStrategy movementValidationStrategy){
 
 		this.movementValidationStrategy = movementValidationStrategy;

@@ -29,7 +29,7 @@ import strategy.game.version.beta.BetaLocation2D;
  * The BetaStrategyGameController implements the game core for
  * the Beta Strategy version.
  * @author cpnota and stabradi
- * @version Sep 13, 2013
+ * @version Oct 8, 2013
  */
 public class UniversalStrategyGameController implements StrategyGameController {
 	private final Collection<PieceLocationDescriptor> redInitialConfiguration;

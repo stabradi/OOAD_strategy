@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
 package strategy.game.version.delta;
 
 import java.util.ArrayList;
@@ -18,13 +28,18 @@ import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.common.RepeatMovementValidationStrategy;
 import strategy.game.version.common.ScoutMovementValidationStrategy;
 
+/**
+ * MovementValidationStrategy for Delta Strategy (see developer's guide)
+ * @author Chris
+ * @version 10/8/2013
+ */
 public class DeltaMovementValidationStrategy implements
 		MovementValidationStrategy {
-	private List<PieceLocationDescriptor> lakes;
-	private RepeatMovementValidationStrategy repeatMovementValidationStrategy;
+	private final List<PieceLocationDescriptor> lakes;
+	private final RepeatMovementValidationStrategy repeatMovementValidationStrategy;
 
 	public DeltaMovementValidationStrategy(){
-		List<Location> lakestmp = new ArrayList<Location>();
+		final List<Location> lakestmp = new ArrayList<Location>();
 		lakes = new ArrayList<PieceLocationDescriptor>();
 		lakestmp.add(new BetaLocation2D(new Location2D(2,4)));
 		lakestmp.add(new BetaLocation2D(new Location2D(3,4)));
