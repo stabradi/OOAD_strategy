@@ -15,6 +15,7 @@ import java.util.Collection;
 
 import strategy.common.StrategyException;
 import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.version.MovePreprocessStrategy;
 import strategy.game.version.MovementRules;
 import strategy.game.version.PlacementRules;
 import strategy.game.version.UniversalStrategyGameController;
@@ -23,8 +24,10 @@ import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.beta.BetaMovementRules;
 import strategy.game.version.beta.BetaPlacementRules;
 import strategy.game.version.common.MovementRulesImpl;
+import strategy.game.version.common.ResignationPreprocessor;
 import strategy.game.version.delta.DeltaMovementValidationStrategy;
 import strategy.game.version.delta.DeltaPlacementRules;
+import strategy.game.version.epsilon.EpsilonMovementRules;
 import strategy.game.version.epsilon.EpsilonMovementValidationStrategy;
 import strategy.game.version.epsilon.EpsilonPlacementRules;
 import strategy.game.version.epsilon.EpsilonStrikeStrategy;
@@ -128,13 +131,21 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> redConfiguration,
 			Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException
 	{
-		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new EpsilonMovementValidationStrategy(), new EpsilonStrikeStrategy()), new EpsilonPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new EpsilonMovementRules(new EpsilonMovementValidationStrategy(), new EpsilonStrikeStrategy()), new EpsilonPlacementRules(), new ResignationPreprocessor());
 
 	}
 	
 	private StrategyGameController makeStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
 			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules, PlacementRules placementRules)
+		throws StrategyException
+	{	
+		return makeStrategyGame(redConfiguration, blueConfiguration, movementRules, placementRules, null);
+	}
+	
+	private StrategyGameController makeStrategyGame(
+			Collection<PieceLocationDescriptor> redConfiguration,
+			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules, PlacementRules placementRules, MovePreprocessStrategy movePreprocessor)
 		throws StrategyException
 	{	
 		if(redConfiguration == null || blueConfiguration == null) throw new StrategyException("Cannot create Beta Strategy with Null Configurations");
@@ -147,6 +158,6 @@ public class StrategyGameFactory
 		for(PieceLocationDescriptor pl: blueConfiguration){ 
 			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
 		}
-		return new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, new ArrayList<PieceLocationDescriptor>(), movementRules, placementRules);
+		return new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, new ArrayList<PieceLocationDescriptor>(), movementRules, placementRules, movePreprocessor);
 	}
 }

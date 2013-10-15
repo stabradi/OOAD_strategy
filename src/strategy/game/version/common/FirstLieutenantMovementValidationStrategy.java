@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
 package strategy.game.version.common;
 
 import java.util.Collection;
@@ -10,6 +20,13 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.version.MovementValidationStrategy;
 
+/**
+ * Validation strategy for first lieutenents. First lieutenants
+ * can strike from two away, but otherwise
+ * only move one space
+ * @author Chris
+ * @version 10/15/2013
+ */
 public class FirstLieutenantMovementValidationStrategy implements
 		MovementValidationStrategy {
 
@@ -21,7 +38,7 @@ public class FirstLieutenantMovementValidationStrategy implements
 		if(from.distanceTo(to) == 2){
 			if((from.getCoordinate(Coordinate.X_COORDINATE) == to.getCoordinate(Coordinate.X_COORDINATE)) ||
 					(from.getCoordinate(Coordinate.Y_COORDINATE) == to.getCoordinate(Coordinate.Y_COORDINATE))){
-				Piece toPiece = controller.getPieceAt(to);
+				final Piece toPiece = controller.getPieceAt(to);
 				if((toPiece == null) || (toPiece.getOwner() == pl.getPiece().getOwner())){
 					throw new StrategyException("First Lieutenants can only move two spaces if they are striking!");
 				}
