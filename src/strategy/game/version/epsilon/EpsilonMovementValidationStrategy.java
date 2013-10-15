@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-package strategy.game.version.delta;
+package strategy.game.version.epsilon;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +16,7 @@ import java.util.List;
 
 import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
+import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.Location2D;
 import strategy.game.common.Piece;
@@ -24,21 +25,22 @@ import strategy.game.common.PieceType;
 import strategy.game.version.MovementValidationStrategy;
 import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.common.CommonMovementValidationStrategy;
+import strategy.game.version.common.FirstLieutenantMovementValidationStrategy;
 import strategy.game.version.common.RepeatMovementValidationStrategy;
 import strategy.game.version.common.ScoutMovementValidationStrategy;
 
 /**
- * MovementValidationStrategy for Delta Strategy (see developer's guide)
+ * MovementValidationStrategy for Epsilon Strategy (see developer's guide)
  * @author Chris
  * @version 10/8/2013
  */
-public class DeltaMovementValidationStrategy implements
+public class EpsilonMovementValidationStrategy implements
 		MovementValidationStrategy {
 	private final List<PieceLocationDescriptor> lakes;
 	private final RepeatMovementValidationStrategy repeatMovementValidationStrategy;
 	private final MovementValidationStrategy commonMovementValidationStrategy;
 
-	public DeltaMovementValidationStrategy(){
+	public EpsilonMovementValidationStrategy(){
 		final List<Location> lakestmp = new ArrayList<Location>();
 		lakes = new ArrayList<PieceLocationDescriptor>();
 		lakestmp.add(new BetaLocation2D(new Location2D(2,4)));
@@ -67,11 +69,14 @@ public class DeltaMovementValidationStrategy implements
 		if(pl.getPiece().getType() == PieceType.FLAG){
 			throw new StrategyException("Cannot move the flag!");
 		}
-		if(pl.getPiece().getType() == PieceType.BOMB){
+		else if(pl.getPiece().getType() == PieceType.BOMB){
 			throw new StrategyException("Can't move bombs!");
 		}
-		if(pl.getPiece().getType() == PieceType.SCOUT){
+		else if(pl.getPiece().getType() == PieceType.SCOUT){
 			createScoutMovementValidationStrategy().validateMove(controller, configuration, pl, from, to);
+		}
+		else if(pl.getPiece().getType()== PieceType.FIRST_LIEUTENANT){
+			createFirstLieutenantMovementValidationStrategy().validateMove(controller, configuration, pl, from, to);
 		}
 		else{
 			if(from.distanceTo(to) != 1){
@@ -92,6 +97,14 @@ public class DeltaMovementValidationStrategy implements
 	 */
 	protected ScoutMovementValidationStrategy createScoutMovementValidationStrategy(){
 		return new ScoutMovementValidationStrategy();
+	}
+	
+	/**
+	 * Creates a FirstLieutenantMovementValidationStrategy
+	 * @return a new FirstLieutenantMovementValidationStrategy
+	 */
+	protected FirstLieutenantMovementValidationStrategy createFirstLieutenantMovementValidationStrategy(){
+		return new FirstLieutenantMovementValidationStrategy();
 	}
 	
 	/**

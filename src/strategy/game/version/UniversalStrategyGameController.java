@@ -89,7 +89,6 @@ public class UniversalStrategyGameController implements StrategyGameController {
 		gameStarted = true;
 	}
 	
-	// TODO Strikes
 	@Override
 	public MoveResult move(PieceType piece, Location from, Location to)
 			throws StrategyException {

@@ -30,7 +30,8 @@ public enum PieceType
 	SPY("Spy", "spy"),
 	BOMB("Bomb", "b"),
 	FLAG("Flag", "f"),
-	CHOKE_POINT("Choke Point","CP");
+	CHOKE_POINT("Choke Point","CP"),
+	FIRST_LIEUTENANT("First Lieutenant", "1LT");
 	
 	private final String printableName;
 	private final String symbol;

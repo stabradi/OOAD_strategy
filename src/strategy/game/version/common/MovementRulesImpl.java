@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-package strategy.game.version.gamma;
+package strategy.game.version.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,29 +20,41 @@ import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
 import strategy.game.common.MoveResultStatus;
-import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.MovementRules;
 import strategy.game.version.MovementValidationStrategy;
-import strategy.game.version.beta.BetaLocation2D;
-import strategy.game.version.beta.StrikeResultBeta;
+import strategy.game.version.StrikeStrategy;
+import strategy.game.version.gamma.GammaStrikeStrategy;
 
 /**
  * Movement Rules implementation for a Gamma Strategy Game
  * @author cpnota
  * @version September 24, 2013
  */
-public class GammaMovementRules implements MovementRules {	
+public class MovementRulesImpl implements MovementRules {	
 	MovementValidationStrategy movementValidationStrategy;
+	StrikeStrategy strikeStrategy;
+	
+	/**
+	 * Constructor for Gamma Movement Rules
+	 * @param movementValidationStrategy
+	 * @param strikeStrategy
+	 */
+	public MovementRulesImpl(MovementValidationStrategy movementValidationStrategy, StrikeStrategy strikeStrategy){
+
+		this.movementValidationStrategy = movementValidationStrategy;
+		this.strikeStrategy=strikeStrategy;
+	}
 	
 	/**
 	 * Constructor for Gamma Movement Rules
 	 * @param movementValidationStrategy
 	 */
-	public GammaMovementRules(MovementValidationStrategy movementValidationStrategy){
+	public MovementRulesImpl(MovementValidationStrategy movementValidationStrategy){
 
 		this.movementValidationStrategy = movementValidationStrategy;
+		this.strikeStrategy = new GammaStrikeStrategy();
 	}
 
 	public MoveResult move(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
@@ -54,7 +66,7 @@ public class GammaMovementRules implements MovementRules {
 		final PieceLocationDescriptor toPl = getPlDescriptorAtFromConfig(to, configuration);
 		MoveResult moveResult;
 		if((toPl != null) && (toPl.getPiece().getOwner() != pl.getPiece().getOwner())){
-			moveResult = strikeMove(configuration, pl, toPl);
+			moveResult = strikeStrategy.strikeMove(configuration, pl, toPl);
 		}
 		else{
 			moveResult = normalMove(configuration, pl, to);
@@ -89,92 +101,6 @@ public class GammaMovementRules implements MovementRules {
 		return new MoveResult(MoveResultStatus.OK, null);
 	}
 
-	/*
-	 * Helper for move(), updates the configurations for moves involving strikes
-	 */
-	private MoveResult strikeMove(Collection<PieceLocationDescriptor> configuration, PieceLocationDescriptor attacker, PieceLocationDescriptor defender) throws StrategyException{
-		final MoveResult result;
-		final StrikeResultBeta strikeResult = combatResult(attacker.getPiece().getType(), defender.getPiece().getType());
-		if(attacker.getLocation().distanceTo(defender.getLocation()) != 1){
-			throw new StrategyException("Cannot strike from more than one space away!");
-		}
-		if(strikeResult == StrikeResultBeta.DRAW){
-			configuration.remove(defender);
-			configuration.remove(attacker);
-			result = new MoveResult(MoveResultStatus.OK, null); // TODO Is this correct BattleWinner info for draw?
-		}
-		else if(strikeResult == StrikeResultBeta.ATTACKER_WINS){
-			configuration.remove(defender);
-			normalMove(configuration, attacker, defender.getLocation());
-			if(defender.getPiece().getType() == PieceType.FLAG){
-				if(attacker.getPiece().getOwner() == PlayerColor.BLUE){
-					result = new MoveResult(MoveResultStatus.BLUE_WINS, attacker);
-				}
-				else{
-					result = new MoveResult(MoveResultStatus.RED_WINS, attacker);
-				}
-			}
-			else{
-				configuration.remove(defender);
-				configuration.remove(attacker);
-				final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
-				configuration.add(newAttacker);
-				result = new MoveResult(MoveResultStatus.OK, newAttacker);
-			}
-		}
-		else{ // Attacker loses
-			configuration.remove(defender);
-			configuration.remove(attacker);
-			final PieceLocationDescriptor newDefender = new PieceLocationDescriptor(defender.getPiece(), attacker.getLocation());
-			configuration.add(newDefender);
-			result = new MoveResult(MoveResultStatus.OK, newDefender);
-		}
-		return result;
-	}
-
-	/**
-	 * 
-	 * @param attacker the piece attacking
-	 * @param defender the piece defending
-	 * @return who won the combat
-	 */
-	protected StrikeResultBeta combatResult(PieceType attacker, PieceType defender){
-		if(attacker!=PieceType.MINER && defender==PieceType.BOMB) return StrikeResultBeta.ATTACKER_LOSES;
-		if(attacker==PieceType.SPY && defender==PieceType.MARSHAL) return StrikeResultBeta.ATTACKER_WINS;
-		if(rank(attacker)==rank(defender)) return StrikeResultBeta.DRAW;
-		if(rank(attacker)>rank(defender)) return StrikeResultBeta.ATTACKER_WINS;
-
-		return StrikeResultBeta.ATTACKER_LOSES;
-	}
-	private int rank(PieceType piece){
-		if(piece==PieceType.MARSHAL){
-			return 12;
-		}else if(piece==PieceType.GENERAL){
-			return 11;
-		}else if(piece==PieceType.COLONEL){
-			return 10;
-		}else if(piece==PieceType.MAJOR){
-			return 9;
-		}else if(piece==PieceType.CAPTAIN){
-			return 8;
-		}else if(piece==PieceType.LIEUTENANT){
-			return 7;
-		}else if(piece==PieceType.SERGEANT){
-			return 6;
-		}else if(piece==PieceType.MINER){
-			return 5;
-		}else if(piece==PieceType.SCOUT){
-			return 4;
-		}else if(piece==PieceType.SPY){
-			return 3;
-		}else if(piece==PieceType.BOMB){
-			return 2;
-		}else{ //if(piece==PieceType.FLAG){
-			return 1;
-		} 
-		//return 0;
-	}
-
 	/**
 	 * Gets PieceLocationDescriptor descriptor from only a given configuration at a given Location
 	 * or null if there is none.
@@ -199,7 +125,7 @@ public class GammaMovementRules implements MovementRules {
 	 * @param config The configuration to search
 	 * @return a boolean of whether or not there are movable pieces
 	 */
-	protected boolean hasNoMovablePieces(Collection<PieceLocationDescriptor> config){
+	public boolean hasNoMovablePieces(Collection<PieceLocationDescriptor> config){
 		boolean movablePieces = false;
 		for(PieceLocationDescriptor pl: config){
 			movablePieces = movablePieces || (( pl.getPiece().getType() != PieceType.FLAG) && (pl.getPiece().getType() != PieceType.BOMB));
