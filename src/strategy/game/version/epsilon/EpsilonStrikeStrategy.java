@@ -34,24 +34,31 @@ public class EpsilonStrikeStrategy implements StrikeStrategy {
 		else if(strikeResult == StrikeResultBeta.ATTACKER_WINS){
 			configuration.remove(defender);
 			normalMove(configuration, attacker, defender.getLocation());
+			final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
 			if(defender.getPiece().getType() == PieceType.FLAG){
 				if(attacker.getPiece().getOwner() == PlayerColor.BLUE){
-					result = new MoveResult(MoveResultStatus.BLUE_WINS, attacker);
+					if(!flagsRemaining(configuration, PlayerColor.RED)){
+						result = new MoveResult(MoveResultStatus.BLUE_WINS, newAttacker);
+					}
+					else{
+						result = new MoveResult(MoveResultStatus.FLAG_CAPTURED, newAttacker);
+					}
 				}
 				else{
-					result = new MoveResult(MoveResultStatus.RED_WINS, attacker);
+					if(!flagsRemaining(configuration, PlayerColor.BLUE)){
+						result = new MoveResult(MoveResultStatus.RED_WINS, newAttacker);
+					}
+					else{
+						result = new MoveResult(MoveResultStatus.FLAG_CAPTURED, newAttacker);
+					}
 				}
 			}
 			else{
-				configuration.remove(defender);
-				configuration.remove(attacker);
-				final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
-				configuration.add(newAttacker);
 				result = new MoveResult(MoveResultStatus.OK, newAttacker);
 			}
 		}
 		else{ // Attacker loses
-			if((attacker.getLocation().distanceTo(defender.getLocation()) != 1) && (attacker.getPiece().getType() == PieceType.FIRST_LIEUTENANT)){
+			if((attacker.getPiece().getType() == PieceType.FIRST_LIEUTENANT) && (attacker.getLocation().distanceTo(defender.getLocation()) != 1)){
 				configuration.remove(attacker);
 				// defender doesn't move if first lieutenant is two spaces away
 				result = new MoveResult(MoveResultStatus.OK, defender);
@@ -117,5 +124,16 @@ public class EpsilonStrikeStrategy implements StrikeStrategy {
 		configuration.remove(pl);
 		configuration.add(new PieceLocationDescriptor(pl.getPiece(), to));
 		return new MoveResult(MoveResultStatus.OK, null);
+	}
+	
+	private boolean flagsRemaining(Collection<PieceLocationDescriptor> configuration, PlayerColor color){
+		boolean flags = false;
+		for(PieceLocationDescriptor pl: configuration){
+			if((pl.getPiece().getType() == PieceType.FLAG) && (pl.getPiece().getOwner() == color)){
+				flags = true;
+				break;
+			}
+		}
+		return flags;
 	}
 }
