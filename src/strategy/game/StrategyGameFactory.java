@@ -15,6 +15,7 @@ import java.util.Collection;
 
 import strategy.common.StrategyException;
 import strategy.game.common.PieceLocationDescriptor;
+import strategy.game.common.StrategyGameObserver;
 import strategy.game.version.MovementRules;
 import strategy.game.version.PlacementRules;
 import strategy.game.version.UniversalStrategyGameController;
@@ -85,7 +86,7 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		return makeStrategyGame(redConfiguration, blueConfiguration, new BetaMovementRules(), new BetaPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new BetaMovementRules(), new BetaPlacementRules(),null);
 	}
 	
 	/**
@@ -100,7 +101,7 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration)
 		throws StrategyException
 	{	
-		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new GammaMovementValidationStrategy(), new GammaStrikeStrategy()), new BetaPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new GammaMovementValidationStrategy(), new GammaStrikeStrategy()), new BetaPlacementRules(),null);
 	}
 	
 	/**
@@ -114,7 +115,7 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> redConfiguration,
 			Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException
 	{
-		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new DeltaMovementValidationStrategy(), new GammaStrikeStrategy()), new DeltaPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new DeltaMovementValidationStrategy(), new GammaStrikeStrategy()), new DeltaPlacementRules(),null);
 	}
 	
 	/**
@@ -126,15 +127,16 @@ public class StrategyGameFactory
 	 */
 	public StrategyGameController makeEpsilonStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
-			Collection<PieceLocationDescriptor> blueConfiguration) throws StrategyException
+			Collection<PieceLocationDescriptor> blueConfiguration,
+			Collection<StrategyGameObserver>observers) throws StrategyException
 	{
-		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new EpsilonMovementValidationStrategy(), new EpsilonStrikeStrategy()), new EpsilonPlacementRules());
+		return makeStrategyGame(redConfiguration, blueConfiguration, new MovementRulesImpl(new EpsilonMovementValidationStrategy(), new EpsilonStrikeStrategy()), new EpsilonPlacementRules(), observers);
 
 	}
 	
 	private StrategyGameController makeStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
-			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules, PlacementRules placementRules)
+			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules, PlacementRules placementRules, Collection<StrategyGameObserver>observers)
 		throws StrategyException
 	{	
 		if(redConfiguration == null || blueConfiguration == null) throw new StrategyException("Cannot create Beta Strategy with Null Configurations");
@@ -147,6 +149,14 @@ public class StrategyGameFactory
 		for(PieceLocationDescriptor pl: blueConfiguration){ 
 			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
 		}
-		return new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, new ArrayList<PieceLocationDescriptor>(), movementRules, placementRules);
+		
+		UniversalStrategyGameController tmpController = 
+				new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, new ArrayList<PieceLocationDescriptor>(), movementRules, placementRules);
+		if(observers!=null){
+			for(StrategyGameObserver obs: observers){
+				tmpController.register(obs);
+			}
+		}
+		return tmpController;
 	}
 }

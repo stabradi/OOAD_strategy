@@ -23,6 +23,8 @@ import strategy.game.common.MoveResultStatus;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
+import strategy.game.common.StrategyGameObservable;
+import strategy.game.common.StrategyGameObserver;
 import strategy.game.version.beta.BetaLocation2D;
 
 /**
@@ -31,7 +33,7 @@ import strategy.game.version.beta.BetaLocation2D;
  * @author cpnota and stabradi
  * @version Oct 8, 2013
  */
-public class UniversalStrategyGameController implements StrategyGameController {
+public class UniversalStrategyGameController implements StrategyGameController, StrategyGameObservable {
 	private final Collection<PieceLocationDescriptor> redInitialConfiguration;
 	private final Collection<PieceLocationDescriptor> blueInitialConfiguration;
 	private final Collection<PieceLocationDescriptor> boardInitialConfiguration;
@@ -43,6 +45,8 @@ public class UniversalStrategyGameController implements StrategyGameController {
 	protected boolean gameStarted;
 	
 	private final MovementRules movementRules;
+	
+	private ArrayList<StrategyGameObserver> observers = new ArrayList<StrategyGameObserver>();
 	
 	public UniversalStrategyGameController(){
 		redInitialConfiguration = null;
@@ -84,6 +88,10 @@ public class UniversalStrategyGameController implements StrategyGameController {
 		currentConfiguration.addAll(blueInitialConfiguration);
 		currentConfiguration.addAll(boardInitialConfiguration);
 		
+		for(StrategyGameObserver obs: observers){
+			obs.gameStart(redInitialConfiguration, blueInitialConfiguration);
+		}
+		
 		currentTurn = PlayerColor.RED;
 		gameOver = false;
 		gameStarted = true;
@@ -92,6 +100,7 @@ public class UniversalStrategyGameController implements StrategyGameController {
 	@Override
 	public MoveResult move(PieceType piece, Location from, Location to)
 			throws StrategyException {
+		StrategyException exception = null;
 		if (gameOver) {
 			throw new StrategyException("The game is over, you cannot make a move");
 		}
@@ -104,13 +113,13 @@ public class UniversalStrategyGameController implements StrategyGameController {
 		final PieceLocationDescriptor fromPl = getPlDescriptorAt(betaFrom);
 		
 		if(fromPl == null){
-			throw new StrategyException("Cannot move piece: There is no piece on that space!");
+			exception = new StrategyException("Cannot move piece: There is no piece on that space!");
 		}
 		if(currentTurn != fromPl.getPiece().getOwner()){
-			throw new StrategyException("Cannot move piece: It is not the piece owner's turn!");
+			exception = new StrategyException("Cannot move piece: It is not the piece owner's turn!");
 		}
 		if(piece != fromPl.getPiece().getType()){
-			throw new StrategyException("Cannot move piece: That piece is not at that location!");
+			exception = new StrategyException("Cannot move piece: That piece is not at that location!");
 		}
 		final MoveResult moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
 		if((moveResult.getStatus() == MoveResultStatus.RED_WINS) || (moveResult.getStatus() == MoveResultStatus.BLUE_WINS) || (moveResult.getStatus() == MoveResultStatus.DRAW)){
@@ -118,6 +127,12 @@ public class UniversalStrategyGameController implements StrategyGameController {
 		}
 		else{
 			nextTurn();
+		}
+		for(StrategyGameObserver obs: observers){
+			obs.moveHappened(piece, betaFrom, betaTo, moveResult, exception);
+		}
+		if(exception != null){
+			throw exception;
 		}
 		return moveResult;
 	}
@@ -171,5 +186,17 @@ public class UniversalStrategyGameController implements StrategyGameController {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void register(StrategyGameObserver observer) {
+		observers.add(observer);
+		
+	}
+
+	@Override
+	public void unregister(StrategyGameObserver observer) {
+		observers.remove(observer);
+		
 	}
 }
