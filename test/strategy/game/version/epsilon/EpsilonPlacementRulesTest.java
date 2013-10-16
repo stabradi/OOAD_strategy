@@ -56,7 +56,7 @@ public class EpsilonPlacementRulesTest {
 			List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
 			List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
 			
-			StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue);
+			StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue,null);
 			
 			controller.startGame();
 			

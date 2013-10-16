@@ -4,6 +4,7 @@ package strategy.game.version.epsilon;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,6 +21,8 @@ import strategy.game.common.MoveResultStatus;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
+import strategy.game.common.StrategyGameObserver;
+import strategy.game.reporter.StrategyGameReporter;
 import strategy.game.version.beta.BetaLocation2D;
 
 public class EpsilonStrategyMainTest {
@@ -63,14 +66,20 @@ public class EpsilonStrategyMainTest {
 	public void testBasicGameWithObservation() throws StrategyException{
 		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
 		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
-		StrategyGameFactory stratGameFactory = StrategyGameFactory.getInstance();
 		
-		stratGameFactory.makeEpsilonStrategyGame(red, blue,null);
+		Collection<StrategyGameObserver> reporters = new ArrayList<StrategyGameObserver>();
+		reporters.add(new StrategyGameReporter());
 		
+		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue,reporters);
 		
+		controller.startGame();
+		
+		Location initLocation = new Location2D(0,3);
+		Location nextLocation = new Location2D(0,4); // one space in front of it
+		controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 
 
-		return config;
+//		return config;
 	}
 	
 	@Test
@@ -78,7 +87,7 @@ public class EpsilonStrategyMainTest {
 		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
 		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
 		
-		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue);
+		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue,null);
 		
 		controller.startGame();
 		
@@ -107,7 +116,7 @@ public class EpsilonStrategyMainTest {
 		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
 		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
 		
-		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue);
+		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue,null);
 		
 		controller.startGame();
 		
@@ -120,7 +129,7 @@ public class EpsilonStrategyMainTest {
 		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
 		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
 		
-		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue);
+		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue,null);
 		
 		controller.startGame();
 		
