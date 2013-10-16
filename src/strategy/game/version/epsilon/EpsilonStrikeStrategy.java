@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * This files was developed for CS4233: Object-Oriented Analysis & Design.
+ * The course was taken at Worcester Polytechnic Institute.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
 package strategy.game.version.epsilon;
 
 import java.util.Collection;
@@ -12,6 +22,11 @@ import strategy.game.common.PieceType;
 import strategy.game.version.StrikeStrategy;
 import strategy.game.version.beta.StrikeResultBeta;
 
+/** 
+ * StrikeStrategy for Epsilon Strategy. Includes FirstLieutenant striking.
+ * @author Chris
+ * @version 10/15/2013
+ */
 public class EpsilonStrikeStrategy implements StrikeStrategy {
 
 	@Override
@@ -34,24 +49,31 @@ public class EpsilonStrikeStrategy implements StrikeStrategy {
 		else if(strikeResult == StrikeResultBeta.ATTACKER_WINS){
 			configuration.remove(defender);
 			normalMove(configuration, attacker, defender.getLocation());
+			final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
 			if(defender.getPiece().getType() == PieceType.FLAG){
 				if(attacker.getPiece().getOwner() == PlayerColor.BLUE){
-					result = new MoveResult(MoveResultStatus.BLUE_WINS, attacker);
+					if(!flagsRemaining(configuration, PlayerColor.RED)){
+						result = new MoveResult(MoveResultStatus.BLUE_WINS, newAttacker);
+					}
+					else{
+						result = new MoveResult(MoveResultStatus.FLAG_CAPTURED, newAttacker);
+					}
 				}
 				else{
-					result = new MoveResult(MoveResultStatus.RED_WINS, attacker);
+					if(!flagsRemaining(configuration, PlayerColor.BLUE)){
+						result = new MoveResult(MoveResultStatus.RED_WINS, newAttacker);
+					}
+					else{
+						result = new MoveResult(MoveResultStatus.FLAG_CAPTURED, newAttacker);
+					}
 				}
 			}
 			else{
-				configuration.remove(defender);
-				configuration.remove(attacker);
-				final PieceLocationDescriptor newAttacker = new PieceLocationDescriptor(attacker.getPiece(), defender.getLocation());
-				configuration.add(newAttacker);
 				result = new MoveResult(MoveResultStatus.OK, newAttacker);
 			}
 		}
 		else{ // Attacker loses
-			if((attacker.getLocation().distanceTo(defender.getLocation()) != 1) && (attacker.getPiece().getType() == PieceType.FIRST_LIEUTENANT)){
+			if((attacker.getPiece().getType() == PieceType.FIRST_LIEUTENANT) && (attacker.getLocation().distanceTo(defender.getLocation()) != 1)){
 				configuration.remove(attacker);
 				// defender doesn't move if first lieutenant is two spaces away
 				result = new MoveResult(MoveResultStatus.OK, defender);
@@ -117,5 +139,16 @@ public class EpsilonStrikeStrategy implements StrikeStrategy {
 		configuration.remove(pl);
 		configuration.add(new PieceLocationDescriptor(pl.getPiece(), to));
 		return new MoveResult(MoveResultStatus.OK, null);
+	}
+	
+	private boolean flagsRemaining(Collection<PieceLocationDescriptor> configuration, PlayerColor color){
+		boolean flags = false;
+		for(PieceLocationDescriptor pl: configuration){
+			if((pl.getPiece().getType() == PieceType.FLAG) && (pl.getPiece().getOwner() == color)){
+				flags = true;
+				break;
+			}
+		}
+		return flags;
 	}
 }

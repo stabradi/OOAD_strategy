@@ -45,6 +45,7 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 	protected boolean gameStarted;
 	
 	private final MovementRules movementRules;
+	private final MovePreprocessStrategy movePreprocessor;
 	
 	private ArrayList<StrategyGameObserver> observers = new ArrayList<StrategyGameObserver>();
 	
@@ -53,6 +54,7 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 		blueInitialConfiguration = null;
 		boardInitialConfiguration = null;
 		movementRules = null;
+		movePreprocessor = null;
 	}
 
 	/**
@@ -69,12 +71,31 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 			MovementRules movementRules, 
 			PlacementRules placementRules) 
 					throws StrategyException{
-		
+		this(redConfiguration, blueConfiguration, boardConfiguration, movementRules, placementRules, null);
+
+	}
+	
+	/**
+	 * @param redConfiguration Configuration of red pieces
+	 * @param blueConfiguration Configuration of blue pieces
+	 * @param boardConfiguration Configuration of other board pieces (ie, if lakes were implemented as pieces)
+	 * @param movementRules Rules that govern the movement of the pieces
+	 * @param placementRules Rules that govern the placement of the pieces
+	 * @param movePreprocessor Preprocessor to be run first on any incoming moves
+	 * @throws StrategyException if the Initial configuration is invalid
+	 */
+	public UniversalStrategyGameController(Collection<PieceLocationDescriptor> redConfiguration, 
+			Collection<PieceLocationDescriptor> blueConfiguration, 
+			Collection<PieceLocationDescriptor> boardConfiguration, 
+			MovementRules movementRules, 
+			PlacementRules placementRules, MovePreprocessStrategy movePreprocessor) 
+					throws StrategyException{
 		redInitialConfiguration = redConfiguration;
 		blueInitialConfiguration = blueConfiguration;
 		boardInitialConfiguration = boardConfiguration;
 		currentConfiguration = null;
 		this.movementRules = movementRules;
+		this.movePreprocessor = movePreprocessor;
 		gameOver = false;
 		gameStarted = false;		
 		placementRules.validatePlacement(redInitialConfiguration,blueInitialConfiguration);
@@ -100,7 +121,18 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 	@Override
 	public MoveResult move(PieceType piece, Location from, Location to)
 			throws StrategyException {
+
 		StrategyException exception = null;
+
+		MoveResult moveResult = null;
+		if(movePreprocessor != null){
+			moveResult = movePreprocessor.preprocessMove(this, currentConfiguration, currentTurn, piece, from, to);
+			if(moveResult != null){
+				return moveResult;
+			}
+		}
+		
+
 		if (gameOver) {
 			throw new StrategyException("The game is over, you cannot make a move");
 		}
@@ -121,7 +153,7 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 		if(piece != fromPl.getPiece().getType()){
 			exception = new StrategyException("Cannot move piece: That piece is not at that location!");
 		}
-		final MoveResult moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
+		moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
 		if((moveResult.getStatus() == MoveResultStatus.RED_WINS) || (moveResult.getStatus() == MoveResultStatus.BLUE_WINS) || (moveResult.getStatus() == MoveResultStatus.DRAW)){
 			gameOver = true;
 		}

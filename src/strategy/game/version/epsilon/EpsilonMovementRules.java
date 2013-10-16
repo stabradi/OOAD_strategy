@@ -8,12 +8,10 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-package strategy.game.version.common;
+package strategy.game.version.epsilon;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
@@ -21,18 +19,16 @@ import strategy.game.common.Location;
 import strategy.game.common.MoveResult;
 import strategy.game.common.MoveResultStatus;
 import strategy.game.common.PieceLocationDescriptor;
-import strategy.game.common.PieceType;
 import strategy.game.version.MovementRules;
 import strategy.game.version.MovementValidationStrategy;
 import strategy.game.version.StrikeStrategy;
-import strategy.game.version.gamma.GammaStrikeStrategy;
 
 /**
- * Movement Rules implementation for a Gamma Strategy Game
+ * Movement Rules implementation for an Epsilon Strategy Game
  * @author cpnota
  * @version September 24, 2013
  */
-public class MovementRulesImpl implements MovementRules {	
+public class EpsilonMovementRules implements MovementRules {	
 	MovementValidationStrategy movementValidationStrategy;
 	StrikeStrategy strikeStrategy;
 	
@@ -41,20 +37,10 @@ public class MovementRulesImpl implements MovementRules {
 	 * @param movementValidationStrategy
 	 * @param strikeStrategy
 	 */
-	public MovementRulesImpl(MovementValidationStrategy movementValidationStrategy, StrikeStrategy strikeStrategy){
+	public EpsilonMovementRules(MovementValidationStrategy movementValidationStrategy, StrikeStrategy strikeStrategy){
 
 		this.movementValidationStrategy = movementValidationStrategy;
 		this.strikeStrategy=strikeStrategy;
-	}
-	
-	/**
-	 * Constructor for Gamma Movement Rules
-	 * @param movementValidationStrategy
-	 */
-	public MovementRulesImpl(MovementValidationStrategy movementValidationStrategy){
-
-		this.movementValidationStrategy = movementValidationStrategy;
-		strikeStrategy = new GammaStrikeStrategy();
 	}
 
 	public MoveResult move(StrategyGameController controller, Collection<PieceLocationDescriptor> configuration,
@@ -71,23 +57,6 @@ public class MovementRulesImpl implements MovementRules {
 		else{
 			moveResult = normalMove(configuration, pl, to);
 		}
-		
-		final Collection<PieceLocationDescriptor> red = new ArrayList<PieceLocationDescriptor>();
-		final Collection<PieceLocationDescriptor> blue = new ArrayList<PieceLocationDescriptor>();
-		for(PieceLocationDescriptor plSplitting: configuration){
-			if(plSplitting.getPiece().getOwner() == PlayerColor.RED)red.add(plSplitting);
-			if(plSplitting.getPiece().getOwner() == PlayerColor.BLUE)blue.add(plSplitting);
-		}
-		final boolean canRedNotMove = hasNoMovablePieces(red);
-		final boolean canBlueNotMove = hasNoMovablePieces(blue);
-		if(canRedNotMove&&canBlueNotMove){
-			moveResult = new MoveResult(MoveResultStatus.DRAW, moveResult.getBattleWinner());
-		}else if(canRedNotMove){
-			moveResult = new MoveResult(MoveResultStatus.BLUE_WINS, moveResult.getBattleWinner());
-		}else if(canBlueNotMove){
-			moveResult = new MoveResult(MoveResultStatus.RED_WINS, moveResult.getBattleWinner());
-		}
-
 		return moveResult;
 	}
 
@@ -118,18 +87,5 @@ public class MovementRulesImpl implements MovementRules {
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Determines whether or not a given configuration contains any moveable pieces.
-	 * @param config The configuration to search
-	 * @return a boolean of whether or not there are movable pieces
-	 */
-	public boolean hasNoMovablePieces(Collection<PieceLocationDescriptor> config){
-		boolean movablePieces = false;
-		for(PieceLocationDescriptor pl: config){
-			movablePieces = movablePieces || (( pl.getPiece().getType() != PieceType.FLAG) && (pl.getPiece().getType() != PieceType.BOMB));
-		}
-		return !movablePieces;
 	}
 }

@@ -17,5 +17,5 @@ package strategy.game.common;
  */
 public enum MoveResultStatus
 {
-	OK, BLUE_WINS, RED_WINS, DRAW;
+	OK, BLUE_WINS, RED_WINS, DRAW, FLAG_CAPTURED;
 }

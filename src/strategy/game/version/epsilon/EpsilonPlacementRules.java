@@ -72,7 +72,7 @@ public class EpsilonPlacementRules extends DeltaPlacementRules {
 			}else if(pl.getPiece().getType()==PieceType.BOMB){
 				if((--bombs)<0)return -12;
 			}else if(pl.getPiece().getType()==PieceType.FIRST_LIEUTENANT){
-				if((--lieutanants)<0)return -13;
+				if((--firstLieutenants)<0)return -13;
 			}else{
 				return -1;
 			}

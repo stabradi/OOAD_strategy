@@ -116,7 +116,7 @@ public class DeltaPlacementRules implements PlacementRules {
 	 * @param config Collection<PieceLocationDescriptor>
 	
 	 * @throws StrategyException */
-	protected void checkNoOverlappingPieces(Collection<PieceLocationDescriptor> config) throws StrategyException{
+	public void checkNoOverlappingPieces(Collection<PieceLocationDescriptor> config) throws StrategyException{
 		//I know this is not terribly efficient, but it is very simple
 		for(PieceLocationDescriptor pl: config){
 			for(PieceLocationDescriptor pl2: config){
@@ -131,7 +131,7 @@ public class DeltaPlacementRules implements PlacementRules {
 	 * @param config second set of pieces to check for correct placement
 	
 	 * @return indication of there being any pieces not on their own side */
-	protected boolean checkPiecesOnSide(PlayerColor color,Collection<PieceLocationDescriptor> config){
+	public boolean checkPiecesOnSide(PlayerColor color,Collection<PieceLocationDescriptor> config){
 		int x;
 		int y;
 		if(config==null)return false;
