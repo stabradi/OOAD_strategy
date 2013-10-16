@@ -61,7 +61,7 @@ public class StrategyGameReporter implements StrategyGameObserver {
 				currentConfiguration.add(new PieceLocationDescriptor(attacker.getPiece(),to));
 			}
 			
-			if(moveResults.getStatus() == MoveResultStatus.OK){
+			if((moveResults.getStatus() == MoveResultStatus.OK) || moveResults.getStatus() == MoveResultStatus.FLAG_CAPTURED){
 				System.out.print("\n=========================================\n");
 				System.out.print("               " + whosMove() + "'s move\n");
 				System.out.print("=========================================\n\n");
@@ -69,6 +69,8 @@ public class StrategyGameReporter implements StrategyGameObserver {
 				System.out.print("Game over: Blue Wins\nfinal board:\n\n");
 			}else if(moveResults.getStatus() == MoveResultStatus.RED_WINS){//<--
 				System.out.print("Game over: Red Wins\nfinal board:\n\n");
+			}else if(moveResults.getStatus() == MoveResultStatus.DRAW){
+				System.out.print("Game over: Draw\nfinal board:\n\n");
 			}
 			
 			printBoard();

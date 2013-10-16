@@ -4,12 +4,10 @@ package strategy.game.version.epsilon;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.StandardOutputStreamLog;
+//import org.junit.contrib.java.lang.system.StandardOutputStreamLog;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
@@ -23,8 +21,6 @@ import strategy.game.common.MoveResultStatus;
 import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
-import strategy.game.common.StrategyGameObserver;
-import strategy.game.reporter.StrategyGameReporter;
 import strategy.game.version.beta.BetaLocation2D;
 
 public class EpsilonStrategyMainTest {

@@ -73,6 +73,13 @@ final board:
 +---+---+---+---+---+---+---+---+---+---+
 |sct|sct|spy| b | b | b | b | b | f | f |
 +---+---+---+---+---+---+---+---+---+---+
-RED Scout
-BLUE Marshal
+OK
+OK
+OK
+OK
+BLUE_WINS
+FLAG_CAPTURED
+OK
+RED_WINS
+FLAG_CAPTURED
 OK

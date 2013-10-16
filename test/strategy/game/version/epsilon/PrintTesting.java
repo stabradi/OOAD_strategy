@@ -107,6 +107,24 @@ public class PrintTesting {
 		nextLocation = new Location2D(9,4); // one space in front of it
 		controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
 		
+		initLocation = new Location2D(1,4);
+		nextLocation = new Location2D(1,5); // one space in front of it
+		controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		initLocation = new Location2D(9,4);
+		nextLocation = new Location2D(9,3); // one space in front of it
+		MoveResult result = controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		assertEquals(MoveResultStatus.FLAG_CAPTURED, result.getStatus());
+		
+		
+		initLocation = new Location2D(1,5);
+		nextLocation = new Location2D(1,6); // one space in front of it
+		controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		
+		initLocation = new Location2D(9,3);
+		nextLocation = new Location2D(8,3); // one space in front of it		
+		result = controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+		assertEquals(MoveResultStatus.BLUE_WINS, result.getStatus());
 	//	return config;
 	}
 	
