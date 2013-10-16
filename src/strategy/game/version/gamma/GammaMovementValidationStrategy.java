@@ -12,7 +12,6 @@ package strategy.game.version.gamma;
 
 import java.util.Collection;
 
-import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
 import strategy.game.common.Coordinate;
@@ -21,7 +20,6 @@ import strategy.game.common.Piece;
 import strategy.game.common.PieceLocationDescriptor;
 import strategy.game.common.PieceType;
 import strategy.game.version.MovementValidationStrategy;
-import strategy.game.version.beta.BetaLocation2D;
 import strategy.game.version.common.RepeatMovementValidationStrategy;
 
 

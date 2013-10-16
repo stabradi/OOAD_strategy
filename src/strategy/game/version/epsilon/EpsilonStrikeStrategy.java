@@ -86,8 +86,10 @@ public class EpsilonStrikeStrategy implements StrikeStrategy {
 				result = new MoveResult(MoveResultStatus.OK, newDefender);
 			}
 		}
+		System.out.println(result.getStatus());
 		return result;
 	}
+
 	
 	/**
 	 * 

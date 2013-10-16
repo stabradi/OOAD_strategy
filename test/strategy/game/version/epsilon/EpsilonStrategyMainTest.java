@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.StandardOutputStreamLog;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
@@ -61,26 +63,9 @@ public class EpsilonStrategyMainTest {
 
 		return config;
 	}
-
-	@Test
-	public void testBasicGameWithObservation() throws StrategyException{
-		List<PieceLocationDescriptor> red = createPlayerInitialConfiguration(PlayerColor.RED, new Location2D(0,0));
-		List<PieceLocationDescriptor> blue = createPlayerInitialConfiguration(PlayerColor.BLUE, new Location2D(0,6));
-		
-		Collection<StrategyGameObserver> reporters = new ArrayList<StrategyGameObserver>();
-		reporters.add(new StrategyGameReporter());
-		
-		StrategyGameController controller = StrategyGameFactory.getInstance().makeEpsilonStrategyGame(red, blue,reporters);
-		
-		controller.startGame();
-		
-		Location initLocation = new Location2D(0,3);
-		Location nextLocation = new Location2D(0,4); // one space in front of it
-		controller.move(controller.getPieceAt(initLocation).getType(), initLocation, nextLocation);
+	
 
 
-//		return config;
-	}
 	
 	@Test
 	public void testMoveAPieceAndStrike()throws StrategyException{

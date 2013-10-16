@@ -16,7 +16,6 @@ import java.util.List;
 
 import strategy.common.StrategyException;
 import strategy.game.StrategyGameController;
-import strategy.game.common.Coordinate;
 import strategy.game.common.Location;
 import strategy.game.common.Location2D;
 import strategy.game.common.Piece;

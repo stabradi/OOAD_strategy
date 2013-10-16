@@ -12,6 +12,7 @@ package strategy.game.version;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import strategy.common.PlayerColor;
 import strategy.common.StrategyException;
@@ -47,7 +48,7 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 	private final MovementRules movementRules;
 	private final MovePreprocessStrategy movePreprocessor;
 	
-	private ArrayList<StrategyGameObserver> observers = new ArrayList<StrategyGameObserver>();
+	final private List<StrategyGameObserver> observers = new ArrayList<StrategyGameObserver>();
 	
 	public UniversalStrategyGameController(){
 		redInitialConfiguration = null;
@@ -146,12 +147,18 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 		
 		if(fromPl == null){
 			exception = new StrategyException("Cannot move piece: There is no piece on that space!");
+			alertObservers(piece, betaFrom, betaTo, moveResult, exception);
+			throw exception;
 		}
 		if(currentTurn != fromPl.getPiece().getOwner()){
 			exception = new StrategyException("Cannot move piece: It is not the piece owner's turn!");
+			alertObservers(piece, betaFrom, betaTo, moveResult, exception);
+			throw exception;
 		}
 		if(piece != fromPl.getPiece().getType()){
 			exception = new StrategyException("Cannot move piece: That piece is not at that location!");
+			alertObservers(piece, betaFrom, betaTo, moveResult, exception);
+			throw exception;
 		}
 		moveResult = movementRules.move(this, currentConfiguration, fromPl, betaFrom, betaTo);
 		if((moveResult.getStatus() == MoveResultStatus.RED_WINS) || (moveResult.getStatus() == MoveResultStatus.BLUE_WINS) || (moveResult.getStatus() == MoveResultStatus.DRAW)){
@@ -160,13 +167,15 @@ public class UniversalStrategyGameController implements StrategyGameController, 
 		else{
 			nextTurn();
 		}
+		
+
+		alertObservers(piece, betaFrom, betaTo, moveResult, exception);
+		return moveResult;
+	}
+	private void alertObservers(PieceType piece, Location betaFrom, Location betaTo, MoveResult moveResult, StrategyException exception){
 		for(StrategyGameObserver obs: observers){
 			obs.moveHappened(piece, betaFrom, betaTo, moveResult, exception);
 		}
-		if(exception != null){
-			throw exception;
-		}
-		return moveResult;
 	}
 	
 	@Override

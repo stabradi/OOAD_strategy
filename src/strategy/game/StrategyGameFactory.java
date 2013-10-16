@@ -70,8 +70,8 @@ public class StrategyGameFactory
 	
 	/**
 	 * Create an Alpha Strategy game.
-	 * @return the created Alpha Strategy game
-	 */
+	
+	 * @return the created Alpha Strategy game */
 	public StrategyGameController makeAlphaStrategyGame()
 	{
 		return new AlphaStrategyGameController();
@@ -81,8 +81,10 @@ public class StrategyGameFactory
 	 * Create a new Beta Strategy game given the 
 	 * @param redConfiguration the initial starting configuration for the RED pieces
 	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
-	 * @return the Beta Strategy game instance with the initial configuration of pieces
-	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
+	
+	
+	 * @return the Beta Strategy game instance with the initial configuration of pieces 
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc) 
 	 */
 	public StrategyGameController makeBetaStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
@@ -96,8 +98,10 @@ public class StrategyGameFactory
 	 * Create a new Gamma Strategy game given the 
 	 * @param redConfiguration the initial starting configuration for the RED pieces
 	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
-	 * @return the Beta Strategy game instance with the initial configuration of pieces
-	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
+	
+	
+	 * @return the Beta Strategy game instance with the initial configuration of pieces 
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc) 
 	 */
 	public StrategyGameController makeGammaStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
@@ -111,8 +115,10 @@ public class StrategyGameFactory
 	 * Create a new Delta Strategy game given the 
 	 * @param redConfiguration the initial starting configuration for the RED pieces
 	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
-	 * @return the Delta Strategy game instance with the initial configuration of pieces
-	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
+	
+	
+	 * @return the Delta Strategy game instance with the initial configuration of pieces 
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc) 
 	 */
 	public StrategyGameController makeDeltaStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
@@ -125,8 +131,11 @@ public class StrategyGameFactory
 	 * Create a new Epsilong Strategy game given the 
 	 * @param redConfiguration the initial starting configuration for the RED pieces
 	 * @param blueConfiguration the initial starting configuration for the BLUE pieces
-	 * @return the Delta Strategy game instance with the initial configuration of pieces
-	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc)
+	
+	
+	 * @param observers Collection<StrategyGameObserver>
+	 * @return the Delta Strategy game instance with the initial configuration of pieces 
+	 * @throws StrategyException if either configuration is invalid (overlapping pieces, etc) 
 	 */
 	public StrategyGameController makeEpsilonStrategyGame(
 			Collection<PieceLocationDescriptor> redConfiguration,
@@ -145,7 +154,7 @@ public class StrategyGameFactory
 			Collection<PieceLocationDescriptor> blueConfiguration, MovementRules movementRules, PlacementRules placementRules, Collection<StrategyGameObserver>observers)
 		throws StrategyException
 	{	
-		return makeStrategyGame(redConfiguration, blueConfiguration, movementRules, placementRules, null);
+		return makeStrategyGame(redConfiguration, blueConfiguration, movementRules, placementRules, null, null);
 	}
 	
 	private StrategyGameController makeStrategyGame(
@@ -164,7 +173,7 @@ public class StrategyGameFactory
 			newBlueConfiguration.add(new PieceLocationDescriptor(pl.getPiece(),new BetaLocation2D(pl.getLocation())));
 		}
 
-		UniversalStrategyGameController tmpController = new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, new ArrayList<PieceLocationDescriptor>(), movementRules, placementRules, movePreprocessor);
+		final UniversalStrategyGameController tmpController = new UniversalStrategyGameController(newRedConfiguration,newBlueConfiguration, new ArrayList<PieceLocationDescriptor>(), movementRules, placementRules, movePreprocessor);
 
 		if(observers!=null){
 			for(StrategyGameObserver obs: observers){
